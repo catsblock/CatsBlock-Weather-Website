@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CatsBlock Weather — Weather that feels alive</title>
+<meta name="description" content="CatsBlock Weather is a free, ad-free Android weather app with radar, live moon, travel forecasts, smart alerts and deep customization.">
+<meta name="theme-color" content="#f7f5f0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M7 14 11 4l8 6h2l8-6 4 10v12a8 8 0 0 1-8 8H15a8 8 0 0 1-8-8V14Z' fill='%23ec4b22'/%3E%3Ccircle cx='15' cy='21' r='2' fill='%2314120f'/%3E%3Ccircle cx='25' cy='21' r='2' fill='%2314120f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..800,0..100,0..1;1,9..144,300..800,0..100,0..1&family=Familjen+Grotesk:wght@400;500;600;700&family=Martian+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#efe7d4;--paper2:#e5dbc0;--ink:#16130e;--mut:#62594a;--hot:#e4411b;--sea:#0e4a43;--sky:#bcd6d8;
+  --line:rgba(22,19,14,.2);--card:rgba(255,252,243,.5);--ok:#1f7a4d;--warn:#b7791f;--bad:#b4281c;
+  --muted:var(--mut);--soft:var(--ink);--line2:rgba(22,19,14,.4);--bg2:var(--paper2);--card2:rgba(255,252,243,.8);
+  --tint:#efe7d4;--orb:#e4411b;--orbx:78%;--orby:22%;
+  --serif:"Fraunces",Georgia,serif;--sans:"Familjen Grotesk","Helvetica Neue",sans-serif;--mono:"Martian Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);--max:1180px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --paper:#0e1412;--paper2:#141c19;--ink:#f0e8d6;--mut:#a39b88;--hot:#ff6a3d;--sea:#7fd0bf;--sky:#1d3a3c;
+  --line:rgba(240,232,214,.16);--card:rgba(240,232,214,.04);--ok:#58d18f;--warn:#e9b44c;--bad:#ff7f70;
+  --line2:rgba(240,232,214,.4);--card2:rgba(240,232,214,.09);--tint:#0e1412}}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.55;overflow-x:hidden;font-size:1.04rem}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;opacity:.07;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+a{color:inherit}img,svg{max-width:100%;display:block}button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{width:min(var(--max),100% - 36px);margin-inline:auto}
+section{padding:84px 0;position:relative}
+h1,h2,h3{font-family:var(--serif);font-weight:500;font-variation-settings:"SOFT" 60,"WONK" 1;line-height:1;letter-spacing:-.025em}
+h1{font-size:clamp(3.2rem,13vw,8.2rem);font-weight:380}
+h2{font-size:clamp(2.2rem,7vw,4.4rem);font-weight:400;margin-bottom:18px}
+h3{font-size:1.45rem;line-height:1.1;margin-bottom:10px}
+.grad,h1 em,h2 em{font-style:italic;color:var(--hot);background:none;-webkit-text-fill-color:currentColor}
+.lead{color:var(--mut);font-size:clamp(1.05rem,2.4vw,1.28rem);max-width:600px}
+.mono,.eyebrow,.num{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+.eyebrow{display:inline-flex;gap:10px;align-items:center;margin-bottom:22px;color:var(--mut)}
+.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--hot);animation:blink 1.6s steps(2) infinite}
+.head{margin-bottom:46px}.head.center{text-align:center}.head.center .lead{margin-inline:auto}
+code,span.mono,.tl code{font-family:var(--mono);font-size:.8em;text-transform:none;letter-spacing:0;background:var(--card2);border:1px solid var(--line);padding:1px 6px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:15px 26px;font-weight:600;border:1.5px solid var(--ink);background:var(--card);transition:transform .25s var(--ease),box-shadow .25s var(--ease),background .2s;text-decoration:none;white-space:nowrap}
+.btn:hover{transform:translate(-3px,-3px);box-shadow:5px 5px 0 var(--ink)}
+.btn.primary{background:var(--hot);color:#fff;border-color:var(--ink)}
+.btn.lg{padding:19px 34px;font-size:1.1rem}.btn svg{width:18px;height:18px}
+
+header.nav{position:fixed;inset:0 0 auto;z-index:50;padding-top:env(safe-area-inset-top,0px);transition:background .3s}
+header.nav.scrolled{background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--serif);font-weight:600;font-size:1.15rem;text-decoration:none;white-space:nowrap}
+.logo svg{width:28px;height:28px}
+.links{display:none;gap:2px}.links a{padding:8px 11px;font-size:.92rem;text-decoration:none;color:var(--mut)}.links a:hover{color:var(--ink);text-decoration:underline;text-decoration-color:var(--hot);text-underline-offset:5px}
+.nav .cta{display:flex;gap:10px;align-items:center}.nav .btn{padding:9px 16px;font-size:.9rem}
+.burger{width:42px;height:42px;border:1.5px solid var(--ink);display:flex;align-items:center;justify-content:center}
+.burger span,.burger span::before,.burger span::after{display:block;width:18px;height:2px;background:var(--ink);position:relative}
+.burger span::before,.burger span::after{content:"";position:absolute;left:0}.burger span::before{top:-6px}.burger span::after{top:6px}
+.menu{position:fixed;inset:64px 0 0;z-index:49;background:var(--paper);padding:14px 18px;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateY(-8px);transition:.3s var(--ease);overflow:auto}
+.menu.open{opacity:1;pointer-events:auto;transform:none}
+.menu a{font-family:var(--serif);font-size:1.8rem;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none}
+@media(min-width:1040px){.links{display:flex}.burger,.menu{display:none}}
+
+/* hero */
+.hero{padding:112px 0 56px;overflow:hidden;background:linear-gradient(var(--paper),var(--tint));transition:background 1.4s}
+.hero .wrap{display:grid;gap:44px;position:relative;z-index:2}
+.orb{position:absolute;width:min(70vw,520px);aspect-ratio:1;border-radius:50%;background:var(--orb);left:var(--orbx);top:var(--orby);translate:-50% -10%;opacity:.9;transition:background 1.4s,left 1.4s var(--ease),top 1.4s var(--ease),filter 1.4s;filter:blur(1px)}
+.orb::after{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-linear-gradient(0deg,transparent 0 9px,var(--paper) 9px 11px);opacity:.35}
+.kick{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-block:1.5px solid var(--ink);padding:8px 0;margin-bottom:30px;color:var(--ink)}
+.hero h1{margin-bottom:26px;mix-blend-mode:normal}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:30px;color:var(--mut);font-size:.9rem}.meta b{color:var(--ink)}
+.phone-stage{display:flex;justify-content:center;padding:10px 0 20px}
+.phone-wrap{position:relative;width:min(300px,78vw)}
+.phone{aspect-ratio:9/18.4;border-radius:42px;padding:10px;background:var(--ink);box-shadow:10px 12px 0 var(--hot);animation:bob 6s ease-in-out infinite;position:relative}
+.screen{height:100%;border-radius:33px;overflow:hidden;position:relative;color:#f4f1e6;padding:32px 16px 16px;display:flex;flex-direction:column;gap:10px;background:linear-gradient(180deg,#5d8a93,#2d5560 70%,#1c3a40);transition:background 1.2s}
+.screen.rain{background:linear-gradient(180deg,#56606b,#2f3842 60%,#1a2027)}
+.screen.sun{background:linear-gradient(180deg,#f0a43f,#d4622a 60%,#7c2d1a)}
+.screen.night{background:linear-gradient(180deg,#1b2350,#10143a 60%,#070a1f)}
+.notch{position:absolute;top:9px;left:50%;width:78px;height:20px;border-radius:99px;background:#000;translate:-50% 0;z-index:3}
+.s-top{text-align:center;margin-top:6px}.s-city{font-size:.8rem;opacity:.85}
+.s-temp{font-family:var(--serif);font-size:4.6rem;font-weight:300;line-height:1;letter-spacing:-.04em}.s-cond{font-size:.88rem;opacity:.9}
+.s-card{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:9px 11px}
+.s-card small{display:block;font-family:var(--mono);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:6px}
+.hours{display:flex;justify-content:space-between;font-size:.7rem;text-align:center}.hours div{display:flex;flex-direction:column;gap:2px;align-items:center}
+.bar{height:4px;background:rgba(255,255,255,.22);margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;width:60%;background:#fff;animation:barmove 5s ease-in-out infinite}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.s-grid b{font-size:1.1rem}
+.drops{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1s}.screen.rain .drops{opacity:1}
+.drops i{position:absolute;top:-20px;width:1.5px;height:16px;background:linear-gradient(transparent,rgba(210,228,255,.8));animation:fall linear infinite}
+.chip{position:absolute;z-index:4;padding:8px 12px;background:var(--paper);color:var(--ink);border:1.5px solid var(--ink);font-size:.78rem;font-weight:600;display:flex;gap:8px;align-items:center;box-shadow:4px 4px 0 var(--ink)}
+.chip.c1{left:-14px;top:20%;animation:bob 5s ease-in-out infinite .4s}.chip.c2{right:-14px;top:62%;animation:bob 6s ease-in-out infinite 1s}.chip.c3{left:-6px;bottom:8%;animation:bob 7s ease-in-out infinite 1.5s}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--ok);flex:none}.dot.y{background:var(--warn)}.dot.r{background:var(--bad)}.dot.v{background:var(--hot)}.dot.c{background:var(--sea)}
+@media(min-width:900px){.hero{padding-top:130px}.hero .wrap{grid-template-columns:1.25fr .75fr;align-items:center}.chip.c1{left:-70px}.chip.c2{right:-60px}.chip.c3{left:-40px}}
+
+.marquee{border-block:1.5px solid var(--ink);background:var(--ink);color:var(--paper);overflow:hidden;padding:14px 0}
+.track{display:flex;gap:34px;width:max-content;animation:scroll 46s linear infinite}
+.track span{font-family:var(--mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}.track span::after{content:"";margin-left:0}
+.marquee:hover .track{animation-play-state:paused}
+
+/* about rows */
+.rows{border-top:1.5px solid var(--ink)}
+.rrow{display:grid;gap:10px;padding:28px 0;border-bottom:1px solid var(--line);transition:background .3s,padding .3s var(--ease)}
+.rrow:hover{background:var(--card);padding-inline:14px}
+.rrow .num{color:var(--hot)}.rrow p{color:var(--mut);max-width:520px}
+.fig{font-family:var(--serif);font-size:clamp(2.8rem,9vw,4.6rem);line-height:.9;font-weight:300;letter-spacing:-.04em}.fig small{display:block;font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-top:8px;font-weight:400}
+@media(min-width:800px){.rrow{grid-template-columns:70px 1.2fr 1fr 180px;align-items:start;gap:30px}.rrow h3{margin:0}}
+
+/* cards / bento (extracted markup) */
+.card{position:relative;background:var(--card);border:1.5px solid var(--ink);padding:26px;overflow:hidden;transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
+.card:hover{transform:translate(-4px,-4px);box-shadow:7px 7px 0 var(--hot)}
+.card p{color:var(--mut);font-size:.98rem}.num{display:block;margin-bottom:16px;color:var(--hot)}
+.bento{display:grid;grid-template-columns:1fr;gap:16px}
+.bento .card{display:flex;flex-direction:column;min-height:250px}
+@media(min-width:640px){.bento{grid-template-columns:repeat(6,1fr)}.b2,.b3{grid-column:span 3}.b4{grid-column:span 6}}
+@media(min-width:1000px){.b2{grid-column:span 2}.b3{grid-column:span 3}.b4{grid-column:span 4}}
+.viz{margin-top:auto;padding-top:20px}
+.mini-list{display:grid;gap:7px}
+.row{display:flex;align-items:center;gap:12px;padding:10px 13px;border:1px solid var(--line);background:var(--paper);font-size:.88rem}.row em{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:.68rem;color:var(--mut)}
+.mini-list .row{opacity:0;transform:translateX(-14px);animation:rowin .6s var(--ease) forwards paused}.in .mini-list .row{animation-play-state:running}
+.in .mini-list .row:nth-child(2){animation-delay:.15s}.in .mini-list .row:nth-child(3){animation-delay:.3s}.in .mini-list .row:nth-child(4){animation-delay:.45s}
+.route{width:100%;height:140px}.route path.l{stroke-dasharray:420;stroke-dashoffset:420}.in .route path.l{animation:draw 2.4s var(--ease) .3s forwards}
+.route g circle{fill:var(--ink)}
+.radar{display:grid;place-items:center}.radar svg{width:160px;height:160px}.radar circle[stroke]{stroke:var(--line2)}
+.sweep{transform-origin:50% 50%;animation:spin 4s linear infinite}
+.pills{display:flex;flex-wrap:wrap;gap:7px}.pill{padding:5px 11px;border:1px solid var(--ink);font-size:.8rem;transition:background .2s,color .2s}.pill:hover{background:var(--ink);color:var(--paper)}
+.moon{width:116px;height:116px;border-radius:50%;margin:auto;background:radial-gradient(circle at 35% 35%,#f6f1de,#c9c0a6 60%,#7a725f);box-shadow:inset -22px -8px 24px rgba(0,0,0,.5);animation:phase 9s ease-in-out infinite alternate}
+.steps{display:grid;gap:14px;counter-reset:s}.steps .card{counter-increment:s}
+.steps .card::after{content:counter(s);position:absolute;right:16px;top:2px;font-family:var(--serif);font-size:5rem;font-weight:300;color:var(--line);line-height:1}
+@media(min-width:700px){.steps{grid-template-columns:repeat(2,1fr)}}@media(min-width:1000px){.steps{grid-template-columns:repeat(4,1fr)}}
+
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.tab{padding:9px 16px;border:1.5px solid var(--ink);font-size:.9rem;font-weight:500;transition:.2s}.tab:hover{background:var(--card2)}.tab.on{background:var(--ink);color:var(--paper)}
+.panel{display:none;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}.panel.on{display:grid;animation:fadeup .5s var(--ease)}
+.opt{padding:18px;border:1px solid var(--line2);background:var(--card)}.opt b{display:block;margin-bottom:4px}.opt span{color:var(--mut);font-size:.88rem}
+
+.tbl{width:100%;border-collapse:collapse;border:1.5px solid var(--ink);background:var(--card)}
+.tbl th,.tbl td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:.92rem;vertical-align:top}
+.tbl th{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;background:var(--paper2);color:var(--mut)}
+.tbl td:first-child{font-weight:600;white-space:nowrap}.tbl tr:last-child td{border-bottom:0}
+.scroll-x{overflow-x:auto}.scroll-x .tbl{min-width:640px}
+.yes{color:var(--ok);font-weight:600}.no{color:var(--bad)}.mid{color:var(--warn)}.tbl .hl{background:color-mix(in srgb,var(--hot) 9%,transparent)}.tbl th.hl{background:var(--hot);color:#fff}
+
+.shield{display:grid;gap:16px}@media(min-width:900px){.shield{grid-template-columns:1fr 1fr}}
+.callout{padding:24px;border:1.5px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent)}.callout.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,transparent)}
+.callout h3{font-size:1.3rem}.callout ul{padding-left:20px;display:grid;gap:8px;margin-top:10px}
+
+.faq{display:grid;max-width:860px;margin-inline:auto;border-top:1.5px solid var(--ink)}
+details{border-bottom:1px solid var(--line2)}
+summary{list-style:none;cursor:pointer;padding:22px 4px;font-family:var(--serif);font-size:1.3rem;display:flex;justify-content:space-between;align-items:center;gap:20px}
+summary::-webkit-details-marker{display:none}summary::after{content:"+";font-family:var(--mono);font-size:1.4rem;color:var(--hot);transition:transform .3s var(--ease)}
+details[open] summary::after{transform:rotate(135deg)}details .ans{padding:0 4px 24px;color:var(--mut);animation:fadeup .4s var(--ease);max-width:720px}
+details .ans p+p{margin-top:10px}details .ans ul{padding-left:20px;display:grid;gap:6px}details .ans b{color:var(--ink)}
+
+.final{padding-top:40px}
+.final .box{background:var(--hot);color:#fff;border:1.5px solid var(--ink);padding:64px 24px;text-align:center;box-shadow:10px 10px 0 var(--ink);position:relative;overflow:hidden}
+.final .box::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-14deg,transparent 0 22px,rgba(255,255,255,.08) 22px 24px)}
+.final .box>*{position:relative}.final h2{max-width:760px;margin:0 auto 14px}.final h2 .grad{color:var(--ink)}.final .lead{margin:0 auto 30px;color:#fff;opacity:.92}
+.final .eyebrow{color:#fff}.final .eyebrow i{background:#fff}
+.final .btn.primary{background:var(--ink);color:var(--paper)}.final .small{margin-top:20px;font-family:var(--mono);font-size:.7rem;opacity:.9}
+
+footer{border-top:1.5px solid var(--ink);padding:56px 0 32px;background:var(--paper2)}
+.fgrid{display:grid;gap:34px;grid-template-columns:1fr 1fr}.fgrid>div:first-child{grid-column:1/-1}
+.fgrid h4{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-bottom:12px;font-weight:500}
+.fgrid a{display:block;padding:4px 0;text-decoration:none}.fgrid a:hover{color:var(--hot)}.fgrid p{color:var(--mut);max-width:340px;margin-top:12px;font-size:.95rem}
+.fbot{margin-top:40px;padding-top:20px;border-top:1px solid var(--line2);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.fbot .ok{display:flex;align-items:center;gap:8px}.fbot .ok i{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:blink 2s steps(2) infinite}
+@media(min-width:800px){.fgrid{grid-template-columns:1.6fr 1fr 1fr 1fr}.fgrid>div:first-child{grid-column:auto}}
+
+/* sub-pages (extracted markup) */
+.page{display:none}.page.on{display:block;animation:fadeup .6s var(--ease)}
+.pagehead{padding:116px 0 30px}.pagehead h1{font-size:clamp(2.6rem,10vw,6rem)}
+.back{display:inline-block;font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;text-decoration:none;border:1.5px solid var(--ink);padding:7px 12px;margin-bottom:24px}.back:hover{background:var(--ink);color:var(--paper)}
+.dl-grid{display:grid;gap:26px;align-items:start}@media(min-width:980px){.dl-grid{grid-template-columns:1.5fr 1fr}.dl-side{position:sticky;top:84px}}
+.dl-side{padding:26px;border:1.5px solid var(--ink);background:var(--card2);box-shadow:8px 8px 0 var(--hot)}@media(max-width:979px){.dl-side{order:-1}}
+.dl-side .v{font-family:var(--serif);font-size:2.4rem;margin:6px 0}
+.kv{display:grid;gap:10px;margin:20px 0;font-size:.9rem}.kv div{display:flex;justify-content:space-between;gap:14px;padding-bottom:8px;border-bottom:1px solid var(--line)}.kv span{color:var(--mut)}.kv b{text-align:right;word-break:break-all}
+.hash{font-family:var(--mono);font-size:.64rem;color:var(--mut);word-break:break-all;margin-top:14px}
+.badge{display:inline-block;font-family:var(--mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;padding:5px 10px;border:1px solid var(--ok);color:var(--ok)}
+.sec{margin-top:50px}.sec>h2{font-size:clamp(1.8rem,5vw,2.8rem)}.sec>p{color:var(--mut);margin-bottom:20px;max-width:720px}
+.tl{display:grid;gap:12px;counter-reset:t}.tl .it{display:grid;grid-template-columns:42px 1fr;gap:16px;padding:18px;border:1px solid var(--line2);background:var(--card);counter-increment:t}
+.tl .it::before{content:counter(t);display:grid;place-items:center;width:42px;height:42px;background:var(--ink);color:var(--paper);font-family:var(--serif);font-size:1.2rem}
+.tl .it b{display:block;margin-bottom:3px}.tl .it span{color:var(--mut);font-size:.94rem}
+.legal{max-width:780px}.legal h2{font-size:1.7rem;margin:38px 0 10px}.legal p{color:var(--mut);margin-bottom:12px}
+
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform .9s var(--ease)}.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+@keyframes bob{50%{transform:translateY(-10px)}}@keyframes blink{50%{opacity:.2}}@keyframes scroll{to{transform:translateX(-50%)}}
+@keyframes fall{to{transform:translateY(560px)}}@keyframes barmove{0%,100%{width:35%}50%{width:88%}}@keyframes rowin{to{opacity:1;transform:none}}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes phase{to{box-shadow:inset -56px -8px 26px rgba(0,0,0,.85)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
+
+/* ===== 2026 refinement: calm, minimal, soft ===== */
+:root{--paper:#f7f5f0;--paper2:#efece4;--ink:#14120f;--mut:#6b6558;--line:rgba(20,18,15,.1);--line2:rgba(20,18,15,.2);--card:#fff;--card2:#fbfaf7;--hot:#ec4b22;--tint:#f7f5f0}
+@media(prefers-color-scheme:dark){:root{--paper:#0d1110;--paper2:#131917;--ink:#efe9da;--mut:#9f9887;--line:rgba(239,233,218,.1);--line2:rgba(239,233,218,.22);--card:rgba(239,233,218,.04);--card2:rgba(239,233,218,.07);--hot:#ff6a3d;--tint:#0d1110}}
+body::before{display:none}
+h1,h2,h3{font-variation-settings:"SOFT" 100,"WONK" 0}h1{font-weight:300;letter-spacing:-.04em}h2{font-weight:350}
+.btn{border:0;border-radius:99px;background:var(--card);box-shadow:0 0 0 1px var(--line2);padding:14px 24px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 0 1px var(--line2),0 14px 30px -14px rgba(20,18,15,.35)}
+.btn.primary{background:var(--ink);color:var(--paper);box-shadow:none}
+.eyebrow{padding:6px 12px;border:1px solid var(--line);border-radius:99px;background:var(--card)}
+.progress{position:fixed;top:0;left:0;right:0;height:2px;background:var(--hot);transform-origin:0 50%;transform:scaleX(0);z-index:70}
+.burger{border:1px solid var(--line2);border-radius:50%}
+header.nav.scrolled{background:color-mix(in srgb,var(--paper) 75%,transparent);backdrop-filter:blur(18px) saturate(1.4)}
+.hero{background:linear-gradient(var(--paper),var(--tint))}
+.orb{opacity:.5;filter:blur(36px);width:min(80vw,560px)}.orb::after{display:none}
+.kick{border:0;border-bottom:1px solid var(--line2);padding:0 0 12px}
+.phone{box-shadow:0 50px 90px -30px rgba(20,18,15,.55);background:#16130f}
+.chip{border:0;border-radius:99px;background:var(--card);color:var(--ink);box-shadow:0 12px 30px -10px rgba(20,18,15,.3),0 0 0 1px var(--line)}
+.marquee{background:transparent;color:var(--mut);border-block:1px solid var(--line);padding:18px 0}
+.track span::after{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--hot);margin-left:34px;vertical-align:middle}
+.rows{border-top:1px solid var(--line2)}.rrow:hover{background:transparent;padding-inline:0}
+.rrow h3{display:flex;align-items:center;gap:12px}
+.hi{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none;display:inline-block;vertical-align:-4px;margin-right:8px}
+.rrow h3 .hi{width:38px;height:38px;padding:9px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--hot);margin:0}
+.ic svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.card{border:1px solid var(--line);border-radius:26px;background:var(--card);box-shadow:0 24px 40px -34px rgba(20,18,15,.35);padding:28px}
+.card:hover{transform:translateY(-5px);box-shadow:0 30px 50px -30px rgba(20,18,15,.4)}
+.row,.opt,.tl .it{border-radius:16px;border:1px solid var(--line)}.row{background:var(--card2)}
+.pill{border:1px solid var(--line2);border-radius:99px}.tab{border:1px solid var(--line2);border-radius:99px}
+.scroll-x{border:1px solid var(--line);border-radius:22px;background:var(--card)}.tbl{border:0;background:transparent}.tbl th{background:var(--card2)}.tbl th.hl{background:var(--ink);color:var(--paper)}
+.callout{border-radius:22px;border:1px solid var(--line2);background:var(--card)}.callout h3{display:flex;align-items:center}.callout h3 .hi{color:var(--warn)}.callout.good h3 .hi{color:var(--ok)}
+.callout,.callout.good{border-color:var(--line2)}
+.tl .it::before{border-radius:12px;background:var(--hot);color:#fff}
+.back{border:1px solid var(--line2);border-radius:99px;display:inline-flex;align-items:center;gap:6px}.back .hi{margin:0;width:14px;height:14px}
+.dl-side{border:1px solid var(--line);border-radius:28px;box-shadow:0 40px 70px -40px rgba(20,18,15,.4);background:var(--card)}
+.badge{border-radius:99px}
+.faq{border-top:1px solid var(--line2)}summary{font-size:1.25rem}
+.final .box{background:var(--ink);color:var(--paper);border:0;border-radius:36px;box-shadow:none;padding:84px 24px}
+.final .box::before{background:radial-gradient(700px circle at 50% 130%,var(--hot),transparent 62%);opacity:.9}
+.final .lead,.final .eyebrow{color:var(--paper)}.final .eyebrow{border-color:rgba(255,255,255,.25);background:transparent}.final .eyebrow i{background:var(--hot)}
+.final h2 .grad{color:var(--hot)}.final .btn.primary{background:var(--paper);color:var(--ink)}
+footer{background:transparent;border-top:1px solid var(--line)}
+
+/* ===== scroll-driven animation (progressive; IntersectionObserver fallback stays) ===== */
+@supports (animation-timeline:scroll()){
+  .progress{animation:grow linear both;animation-timeline:scroll(root)}
+  .reveal{opacity:1;transform:none;transition:none;animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 60%}
+  .hero .wrap>div:first-child{animation:heroout linear both;animation-timeline:scroll(root);animation-range:0 80vh}
+  .phone-wrap{animation:phone linear both;animation-timeline:scroll(root);animation-range:0 100vh}
+  .orb{animation:orbd linear both;animation-timeline:scroll(root);animation-range:0 120vh}
+  .rrow .fig{animation:figin linear both;animation-timeline:view();animation-range:entry 5% cover 38%}
+  .rrow h3 .hi{animation:spinin linear both;animation-timeline:view();animation-range:entry 0% cover 30%}
+  .bento .card{animation:pop linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
+  .marquee .track{animation:scroll 46s linear infinite}
+  .final .box{animation:grow2 linear both;animation-timeline:view();animation-range:entry 0% cover 45%}
+  @keyframes grow{to{transform:scaleX(1)}}
+  @keyframes rise{from{opacity:0;transform:translateY(56px)}to{opacity:1;transform:none}}
+  @keyframes heroout{to{opacity:0;transform:translateY(-50px)}}
+  @keyframes phone{to{transform:translateY(90px) rotate(5deg) scale(.9)}}
+  @keyframes orbd{to{translate:-50% 60%;scale:1.35;opacity:.2}}
+  @keyframes figin{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:none}}
+  @keyframes spinin{from{transform:rotate(-90deg) scale(.6)}to{transform:none}}
+  @keyframes pop{from{opacity:0;transform:translateY(70px) scale(.94)}to{opacity:1;transform:none}}
+  @keyframes grow2{from{transform:scale(.9);border-radius:80px}to{transform:none}}
+}
+
+/* ===== phone v2: realistic Android screen, scales with its own width ===== */
+.phone-col{display:flex;flex-direction:column;align-items:center;gap:22px}
+.phone-wrap{container-type:inline-size;width:max(210px,min(300px,74vw,calc((100dvh - 190px)*.47)))}
+.phone{aspect-ratio:9/19.2;border-radius:13cqw;padding:2.4%;background:#0c0b0a;animation:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 0 0 1px rgba(0,0,0,.5),0 50px 80px -34px rgba(20,18,15,.55),0 16px 30px -20px rgba(20,18,15,.5);position:relative}
+.phone::before{content:"";position:absolute;right:-3px;top:24%;width:3px;height:14%;border-radius:2px;background:#26231f}
+.phone::after{content:"";position:absolute;left:50%;top:3.6%;width:3.2%;aspect-ratio:1;border-radius:50%;background:#000;translate:-50% 0;z-index:5;box-shadow:inset 0 0 0 1.5px #1b1a18}
+.screen{height:100%;border-radius:11cqw;padding:0;container-type:inline-size;display:block;background:linear-gradient(180deg,#78a3ab,#46707a 62%,#2c4c54)}
+.screen.rain{background:linear-gradient(180deg,#76828c,#475360 62%,#2c353e)}
+.screen.sun{background:linear-gradient(180deg,#eaa55a,#cc6f3e 62%,#8a3f26)}
+.screen.night{background:linear-gradient(180deg,#273069,#141a47 62%,#080c25)}
+.sin{height:100%;display:flex;flex-direction:column;gap:.7em;padding:.4em 1.1em 0;font-size:4.2cqw;line-height:1.25;position:relative;z-index:2}
+.sb{display:flex;justify-content:space-between;align-items:center;font-size:.9em;font-weight:600;padding:.9em .6em .2em}
+.sbi{display:flex;gap:.45em}.sbi svg{width:1.35em;height:1.35em;fill:currentColor;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+.sbi svg:first-child{stroke:none}.sbi svg:last-child{fill:none}
+.toast{display:flex;align-items:center;gap:.7em;padding:.7em .95em;border-radius:1.2em;background:rgba(10,12,14,.5);backdrop-filter:blur(10px);font-size:.82em;font-weight:500}
+.s-top{padding:.1em .3em;text-align:left}.s-city{display:flex;align-items:center;gap:.4em;font-size:.95em;opacity:.9}.s-city svg{width:1.05em;height:1.05em;fill:none;stroke:currentColor;stroke-width:1.8}
+.s-temp{font-size:5.4em;font-weight:300;line-height:1;letter-spacing:-.045em;font-family:var(--sans);margin:.04em 0}.s-cond{font-size:.95em;opacity:.92}
+.s-card{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.16);border-radius:1.2em;padding:.75em .9em;backdrop-filter:blur(8px)}
+.s-card small{display:block;font-size:.66em;letter-spacing:.09em;text-transform:uppercase;opacity:.75;margin-bottom:.45em;font-family:var(--sans);font-weight:600}
+.curve{width:100%;height:3.4em;display:block;margin-bottom:.3em;overflow:visible}.curve path{vector-effect:non-scaling-stroke}
+#cLine{fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round}#cArea{fill:rgba(255,255,255,.13);stroke:none}
+.hours{display:flex;justify-content:space-between;font-size:.82em;text-align:center}.hours div{display:flex;flex-direction:column;gap:.25em;align-items:center}.hours span:first-child{opacity:.75;font-size:.9em}
+.screen .ic svg{width:1.45em;height:1.45em}
+.s-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7em}.s-grid b{font-size:1.25em;font-weight:600}
+.uv{height:.4em;border-radius:1em;margin-top:.7em;position:relative;background:linear-gradient(90deg,#6ee7a0,#f2d95a,#f5953d,#e5484d,#a45bd6)}
+.uv i{position:absolute;top:50%;left:var(--p,50%);width:1em;height:1em;border-radius:50%;background:#fff;box-shadow:0 0 0 .2em rgba(0,0,0,.28);translate:-50% -50%;transition:left .9s var(--ease)}
+.wrow{display:flex;justify-content:space-between;align-items:center}.comp{width:2em;height:2em;fill:none;stroke:#fff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}.comp circle{opacity:.45}.comp path{transform-origin:12px 12px;transition:transform 1s var(--ease)}
+.rainbars{display:flex;align-items:flex-end;gap:.4em;height:2.6em}.rainbars i{flex:1;border-radius:.3em;background:rgba(255,255,255,.88);height:var(--h,4%);transition:height .8s var(--ease)}
+.rl{display:flex;justify-content:space-between;font-size:.66em;opacity:.7;margin-top:.45em}
+.tabbar{margin-top:auto;display:flex;justify-content:space-around;padding:.9em 0 1.3em;border-top:1px solid rgba(255,255,255,.16)}
+.tabbar svg{width:1.6em;height:1.6em;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.55}
+.drops{z-index:1;overflow:hidden}.drops i{width:1px;height:2.2em;top:-3em;transform:rotate(12deg);background:linear-gradient(transparent,rgba(225,238,255,.55));animation:fall linear infinite}
+@keyframes fall{to{transform:translate(-3em,46em) rotate(12deg)}}
+.fx{opacity:1}.fx.go{animation:fxin .65s var(--ease) both}@keyframes fxin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.seg{display:flex;gap:4px;padding:4px;border-radius:99px;background:var(--card);box-shadow:0 0 0 1px var(--line2);max-width:100%}
+.seg button{display:flex;align-items:center;gap:7px;min-height:44px;padding:0 14px;border-radius:99px;font-size:.88rem;font-weight:500;color:var(--mut);transition:background .25s,color .25s}
+.seg button[aria-selected=true]{background:var(--ink);color:var(--paper)}
+.seg .ic svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:400px){.seg button{padding:0 10px}.seg button span:last-child{display:none}.seg button[aria-selected=true] span:last-child{display:inline}}
+@supports (animation-timeline:scroll()){.phone-wrap{animation:phone2 linear both;animation-timeline:scroll(root);animation-range:0 100vh}@keyframes phone2{to{transform:translateY(48px) scale(.97)}}}
+
+/* ===== responsive comfort pass ===== */
+.wrap{width:min(var(--max),100% - 2*max(18px,env(safe-area-inset-left,0px),env(safe-area-inset-right,0px)))}
+@media(min-width:1500px){:root{--max:1300px}body{font-size:1.1rem}}
+html{-webkit-tap-highlight-color:transparent}
+.menu{inset:calc(64px + env(safe-area-inset-top,0px)) 0 0}
+section{padding:clamp(56px,9vw,112px) 0}
+.hero{padding:clamp(96px,16vw,132px) 0 clamp(40px,7vw,72px)}
+.hero h1{font-size:clamp(2.7rem,10.5vw,7.2rem)}
+@media(min-width:900px){.hero .wrap{grid-template-columns:1.2fr .8fr;gap:56px}}
+@media(max-width:899px){.hero .wrap>div:first-child{text-align:left}.phone-stage{padding-top:8px}}
+@media(max-height:600px) and (orientation:landscape){.hero{padding-top:84px}.hero .wrap{grid-template-columns:1.2fr .8fr}.hero h1{font-size:clamp(2.2rem,7vw,4rem)}}
+@media(max-width:380px){.logo{font-size:1rem}.logo svg{width:24px;height:24px}.nav .btn{padding:9px 12px;font-size:.85rem}.actions .btn.lg{width:100%}}
+@media(max-width:560px){.actions .btn{flex:1 1 100%}.tabs{flex-wrap:nowrap;overflow-x:auto;margin-inline:-18px;padding-inline:18px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}.tab{flex:none}.card{padding:22px;border-radius:22px}}
+.tab,.btn,summary{min-height:44px}.tab{display:inline-flex;align-items:center}
+@media(min-width:640px) and (max-width:999px){
+  .rrow{grid-template-columns:56px 1fr 170px;gap:6px 24px}.rrow .num{grid-row:1}.rrow p{grid-column:2}.rrow .fig{grid-column:3;grid-row:1/3}
+}
+@media(min-width:1000px){.rrow{grid-template-columns:70px 1.2fr 1fr 190px;gap:30px}.rrow p,.rrow .fig{grid-column:auto;grid-row:auto}}
+.final .box{padding:clamp(56px,10vw,96px) clamp(18px,5vw,40px)}
+.pagehead{padding-top:clamp(96px,14vw,128px)}
+.tl .it{grid-template-columns:36px 1fr;gap:14px;padding:16px}.tl .it::before{width:36px;height:36px}
+@media(hover:none){.card:hover{transform:none}.btn:hover{transform:none;box-shadow:0 0 0 1px var(--line2)}.btn.primary:hover{box-shadow:none}}
+@media(prefers-reduced-motion:reduce){.drops i,.fx.go{animation:none!important}}
+
+/* ===== pass 4: pages, tables and long content on every screen ===== */
+main{overflow-x:clip}
+.btn{white-space:normal;text-align:center;line-height:1.25}.nav .btn,.seg button{white-space:nowrap}
+.dl-grid{grid-template-columns:minmax(0,1fr)}.dl-grid>*{min-width:0}
+.tl{grid-template-columns:minmax(0,1fr)}.tl .it{grid-template-columns:36px minmax(0,1fr)}
+.tl .it,.legal p,.callout,details .ans,.opt,.kv b,.dl-side,.lead,.tbl td{overflow-wrap:anywhere}
+.panel{grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr))}
+.wrap.legal{max-width:none;width:min(var(--max),100% - 2*max(18px,env(safe-area-inset-left,0px),env(safe-area-inset-right,0px)))}
+.legal>*{max-width:760px}
+.legal h2{font-size:clamp(1.35rem,4vw,1.7rem)}
+.dl-side .btn{width:100%}
+@media(min-width:980px){.dl-grid{grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr)}.dl-side{max-height:calc(100dvh - 104px);overflow:auto}}
+@media(min-width:600px) and (max-width:979px){.dl-side{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;align-items:start}.dl-side>*{grid-column:1/-1}.dl-side .kv{grid-column:2;grid-row:1/6;margin:0}.dl-side>.badge,.dl-side>.v,.dl-side>p:first-of-type{grid-column:1}.dl-side>.btn{grid-column:1/-1}}
+@media(max-width:599px){.dl-side{padding:22px;border-radius:24px}.sec{margin-top:40px}.callout{padding:20px}.kv b{max-width:60%}}
+
+/* tables become readable cards on small screens (labels added by script) */
+@media(max-width:719px){
+  .scroll-x{overflow:visible;border:0;background:none;border-radius:0}.scroll-x .tbl{min-width:0}
+  .tbl,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}.tbl thead{display:none}
+  .tbl tr{border:1px solid var(--line);border-radius:20px;background:var(--card);margin-bottom:12px;padding:6px 0;overflow:hidden}
+  .tbl td{border:0;padding:7px 18px;white-space:normal!important;font-size:.95rem}
+  .tbl td:first-child{font-family:var(--serif);font-size:1.2rem;padding-top:14px}
+  .tbl td[data-label]::before{content:attr(data-label);display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-bottom:2px}
+  .tbl td.hl{background:color-mix(in srgb,var(--hot) 9%,transparent)}
+}
+@media(min-width:720px) and (max-width:999px){.tbl td:first-child{white-space:normal}.scroll-x .tbl{min-width:600px}}
+
+/* ===== regional availability notice ===== */
+.geo{position:fixed;left:50%;translate:-50% 0;bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(680px,100% - 24px);z-index:90;display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:20px;background:var(--ink);color:var(--paper);box-shadow:0 24px 50px -20px rgba(0,0,0,.55);animation:fxin .6s var(--ease) both;overflow-wrap:anywhere}
+.geo[hidden]{display:none}
+.geo .hi{color:var(--hot);margin:2px 0 0;flex:none}.geo b{display:block;font-size:1rem;margin-bottom:2px}.geo p{font-size:.92rem;opacity:.92;line-height:1.5}
+.geo button{margin-inline-start:auto;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;flex:none}.geo button:hover{background:rgba(255,255,255,.12)}
+.geo button svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+body.has-geo{padding-bottom:140px}
+.is-off{opacity:.4;pointer-events:none;cursor:not-allowed;filter:grayscale(1)}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+<div class="geo" id="geo" role="alert" hidden><svg class="hi" viewBox="0 0 24 24"><path d="M12 3 2 20h20Z"/><path d="M12 10v4M12 17h.01"/></svg><div><b id="geoT"></b><p id="geoM"></p></div><button id="geoX" type="button" aria-label="Close" hidden><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+
+<header class="nav" id="nav"><div class="wrap">
+  <a class="logo" href="#/" aria-label="CatsBlock Weather home">
+    <svg viewBox="0 0 40 40" fill="none"><path d="M7 14 11 4l8 6h2l8-6 4 10v12a8 8 0 0 1-8 8H15a8 8 0 0 1-8-8V14Z" fill="#e4411b" stroke="#16130e" stroke-width="2"/><circle cx="15" cy="21" r="2" fill="#16130e"/><circle cx="25" cy="21" r="2" fill="#16130e"/><path d="M17 27c1.6 1.4 4.4 1.4 6 0" stroke="#16130e" stroke-width="1.8" stroke-linecap="round"/></svg>
+    CatsBlock Weather</a>
+  <nav class="links" aria-label="Primary"><a href="#/about">About</a><a href="#/features">Features</a><a href="#/settings">Settings</a><a href="#/data">Data</a><a href="#/security">Security</a><a href="#/compare">Why us</a><a href="#/faq">FAQ</a><a href="#/privacy">Privacy</a></nav>
+  <div class="cta"><a class="btn primary" href="#/download">Download</a><button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span></button></div>
+</div></header>
+<nav class="menu" id="menu" aria-label="Mobile"><a href="#/about">About</a><a href="#/features">Features</a><a href="#/settings">Settings</a><a href="#/data">Data</a><a href="#/security">Security</a><a href="#/compare">Why us</a><a href="#/faq">FAQ</a><a href="#/privacy">Privacy Policy</a></nav>
+
+<main>
+<div class="page on" id="page-home">
+
+<section class="hero" id="top">
+  <div class="orb" id="orb"></div>
+  <div class="wrap">
+    <div>
+      <div class="kick mono"><span>Station report</span><span id="today">Today</span><span>Free · No ads · No account</span></div>
+      <h1>Weather that <em>feels alive.</em></h1>
+      <p class="lead">CatsBlock Weather is a fast, beautiful Android weather app with live radar, a real moon camera, route forecasts and smart alerts that tell you what to wear — all customizable down to the font.</p>
+      <div class="actions">
+        <a class="btn primary lg" href="#/download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 20h16"/></svg>Download for Android</a>
+        <a class="btn lg" href="#/features">See the features</a>
+      </div>
+      <div class="meta"><span><b>Android 12+</b> recommended</span><span><b>10</b> languages</span><span><b>4</b> weather sources</span></div>
+    </div>
+    <div class="phone-stage"><div class="phone-col">
+      <div class="phone-wrap"><div class="phone">
+        <div class="screen" id="screen"><div class="drops" id="drops"></div>
+          <div class="sin">
+            <div class="sb"><span id="clock">14:05</span><span class="sbi"><svg viewBox="0 0 24 24"><path d="M3 20h2v-4H3zM8 20h2v-8H8zM13 20h2V8h-2zM18 20h2V4h-2z"/></svg><svg viewBox="0 0 24 24"><rect x="3" y="7" width="16" height="10" rx="2.5"/><path d="M21 10.5v3"/><rect x="5" y="9" width="9" height="6" rx="1" fill="currentColor" stroke="none"/></svg></span></div>
+            <div class="toast fx" id="toast"><span class="dot v"></span><span id="toastT"></span></div>
+            <div class="s-top fx"><div class="s-city"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Your city</div><div class="s-temp" id="sTemp">24°</div><div class="s-cond"><span id="sCond"></span> · <span id="sHL"></span></div></div>
+            <div class="s-card fx"><small>Next hours</small><svg class="curve" viewBox="0 0 240 44" preserveAspectRatio="none"><path id="cArea"/><path id="cLine"/></svg><div class="hours" id="sHours"></div></div>
+            <div class="s-grid fx">
+              <div class="s-card"><small>UV index</small><b id="sUv">6</b><div class="uv"><i id="uvDot"></i></div></div>
+              <div class="s-card"><small>Wind</small><div class="wrow"><b id="sWind">12 km/h</b><svg class="comp" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path id="arrow" d="M12 5v14M8 9l4-4 4 4"/></svg></div></div>
+            </div>
+            <div class="s-card fx"><small>Rain next hour</small><div class="rainbars" id="rbars"></div><div class="rl"><span>Now</span><span>+60 min</span></div></div>
+            <div class="tabbar"><svg viewBox="0 0 24 24" style="opacity:1"><path d="M4 11 12 4l8 7v9H4Z"/></svg><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 12 18 8"/></svg><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/><path d="M8 18h6a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h6"/></svg></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="seg" id="seg" role="tablist" aria-label="Preview the weather"></div>
+    </div></div>
+  </div>
+</section>
+
+<div class="marquee" aria-label="Public data sources"><div class="track" id="track"></div></div>
+
+<section id="about"><div class="wrap">
+  <div class="head reveal"><span class="eyebrow">About</span><h2>A weather app built with <em>care, not clutter.</em></h2>
+    <p class="lead">CatsBlock Weather shows exactly what you need and nothing you don’t. It runs without accounts, ads or analytics, keeps your cities and preferences on your phone, and lets you decide which weather provider to trust.</p></div>
+  <div class="rows">
+    <div class="rrow reveal"><span class="num">01</span><h3><svg class="hi" viewBox="0 0 24 24"><path d="M12 2v4M4.9 4.9l2.8 2.8M2 12h4m11.3-4.3 2.8-2.8M18 12h4M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Z"/></svg>Accurate &amp; detailed</h3><p>Current conditions, hourly and daily forecasts, UV, wind, pressure, visibility, humidity and air quality.</p><div class="fig"><span data-count="4">0</span><small>weather sources</small></div></div>
+    <div class="rrow reveal"><span class="num">02</span><h3><svg class="hi" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9M12 7v5l3 3"/></svg>Always on time</h3><p>Background updates, rain and snow alerts before they arrive, and daily alerts at the hour you choose.</p><div class="fig">Your<small>hour, your alerts</small></div></div>
+    <div class="rrow reveal"><span class="num">03</span><h3><svg class="hi" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></svg>Private by design</h3><p>No account, no ads, no analytics, no profile. Saved cities and settings never leave your device.</p><div class="fig"><span data-count="0">0</span><small>ads, accounts or trackers</small></div></div>
+    <div class="rrow reveal"><span class="num">04</span><h3><svg class="hi" viewBox="0 0 24 24"><path d="M12 3 2 9l10 6 10-6-10-6ZM2 15l10 6 10-6"/></svg>Yours to shape</h3><p>AMOLED black, accent colors, custom fonts, app icons, widgets and 10 languages.</p><div class="fig"><span data-count="10">0</span><small>languages · 6 widgets</small></div></div>
+  </div>
+</div></section>
+
+<section id="features"><div class="wrap">
+  <div class="head center reveal"><span class="eyebrow">Features</span><h2>Everything you check, <em>in one place.</em></h2><p class="lead">From a quick glance to deep dives — each screen is built to be fast, readable and beautiful.</p></div>
+    <div class="bento">
+      <div class="card b4 reveal" data-glow>
+        <span class="num">01 · ALERTS &amp; WARNINGS</span><h3>Alerts that know what to tell you</h3><p>Pick the hour, and the app checks the forecast and only speaks up when it matters: what to wear, UV, pollen, frost, pressure drops, air quality and official warnings.</p>
+        <div class="viz"><div class="mini-list">
+          <div class="row"><span class="dot v"></span><b>What to wear today</b><em>07:30</em></div>
+          <div class="row"><span class="dot y"></span><b>UV peaks at 9 around 13:00</b><em>08:00</em></div>
+          <div class="row"><span class="dot c"></span><b>Pressure drops 5 hPa in 3 h</b><em>08:00</em></div>
+          <div class="row"><span class="dot r"></span><b>Orange warning · Severe storm</b><em>live</em></div>
+        </div></div>
+      </div>
+      <div class="card b2 reveal d1" data-glow>
+        <span class="num">02 · CLOTHING CONSULTANT</span><h3>What to wear, in detail</h3><p>Top, bottom, shoes, accessories, rain, sun and wind — tuned to your work hours, commute and how you feel the cold.</p>
+        <div class="viz"><div class="pills"><span class="pill">Layers</span><span class="pill">Waterproof</span><span class="pill">SPF 30+</span><span class="pill">Windproof</span><span class="pill">Commute</span></div></div>
+      </div>
+      <div class="card b2 reveal" data-glow>
+        <span class="num">03 · RAIN RADAR</span><h3>Live rain map</h3><p>Watch precipitation move over an OpenStreetMap base with animated radar frames.</p>
+        <div class="viz radar"><svg viewBox="0 0 170 170"><circle cx="85" cy="85" r="80" fill="none" stroke="rgba(255,255,255,.12)"/><circle cx="85" cy="85" r="54" fill="none" stroke="rgba(255,255,255,.12)"/><circle cx="85" cy="85" r="27" fill="none" stroke="rgba(255,255,255,.12)"/><circle cx="62" cy="64" r="16" fill="rgba(20,18,15,.35)"/><circle cx="104" cy="104" r="12" fill="rgba(236,75,34,.55)"/><g class="sweep"><path d="M85 85 165 85A80 80 0 0 0 85 5Z" fill="url(#sw)" opacity=".55"/></g><defs><linearGradient id="sw" x1="0" x2="1"><stop stop-color="#14120f" stop-opacity="0"/><stop offset="1" stop-color="#14120f"/></linearGradient></defs></svg></div>
+      </div>
+      <div class="card b2 reveal d1" data-glow>
+        <span class="num">04 · TRAVEL</span><h3>Weather along your route</h3><p>Type a start and destination and see the forecast city by city, with arrival times and a real map.</p>
+        <div class="viz"><svg class="route" viewBox="0 0 300 150" fill="none"><path class="l" d="M20 120C70 110 80 40 140 60S230 120 280 30" stroke="url(#rg)" stroke-width="4" stroke-linecap="round"/><defs><linearGradient id="rg" x1="0" x2="1"><stop stop-color="#ec4b22"/><stop offset="1" stop-color="#14120f"/></linearGradient></defs><g fill="#fff"><circle cx="20" cy="120" r="7"/><circle cx="140" cy="60" r="7"/><circle cx="280" cy="30" r="7"/></g></svg></div>
+      </div>
+      <div class="card b2 reveal d2" data-glow>
+        <span class="num">05 · MOON &amp; SUN</span><h3>Live moon, eclipses, sunrise</h3><p>Moon phases in 3D, a live camera viewfinder and alerts before eclipses.</p>
+        <div class="viz"><div class="moon"></div></div>
+      </div>
+      <div class="card b3 reveal" data-glow>
+        <span class="num">06 · WIDGETS</span><h3>Six home-screen widgets</h3><p>Compact, square, tips, hourly and two radar widgets that refresh in the background.</p>
+        <div class="viz"><div class="pills"><span class="pill">Compact</span><span class="pill">Square</span><span class="pill">Tips</span><span class="pill">Hourly</span><span class="pill">Radar small</span><span class="pill">Radar wide</span></div></div>
+      </div>
+      <div class="card b3 reveal d1" data-glow>
+        <span class="num">07 · CUSTOMIZE</span><h3>Make it unmistakably yours</h3><p>AMOLED black, accent colors from your wallpaper or a hex code, your own font file, app icon changer and 10 languages.</p>
+        <div class="viz"><div class="pills"><span class="pill">English</span><span class="pill">Português</span><span class="pill">Español</span><span class="pill">Français</span><span class="pill">Русский</span><span class="pill">Deutsch</span><span class="pill">Italiano</span><span class="pill">한국어</span><span class="pill">Bahasa Indonesia</span></div></div>
+      </div>
+    </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="head center reveal"><span class="eyebrow">How to use</span><h2>Up and running <em>in one minute.</em></h2></div>
+    <div class="steps">
+      <div class="card reveal d1"><h3>Install</h3><p>Download the APK from the Download page, open it and allow your browser to install apps if Android asks.</p></div>
+      <div class="card reveal d2"><h3>Allow location</h3><p>Tap Allow for your current weather, or skip it and search for any city instead.</p></div>
+      <div class="card reveal d3"><h3>Pick a source</h3><p>Open Settings → Weather data and choose Open-Meteo, WeatherAPI.com, Visual Crossing or OpenWeather.</p></div>
+      <div class="card reveal d4"><h3>Turn on alerts</h3><p>Open Alerts &amp; warnings, switch on what you want and choose the time. Add a widget from your home screen.</p></div>
+    </div>
+    <div class="card reveal" style="margin-top:16px">
+      <h3>Good to know</h3>
+      <p>Tap and hold a weather card to play its effect, swipe between cities, open any detail card for charts, and use the Travel screen for a trip forecast. If alerts do not arrive, set the app’s battery usage to “Unrestricted” and keep notifications allowed.</p>
+    </div>
+</div></section>
+
+<section id="settings"><div class="wrap">
+  <div class="head reveal"><span class="eyebrow">Settings</span><h2>Control <em>everything.</em></h2><p class="lead">Every option is in one clear Settings screen. Here is what you can change.</p></div>
+  <div class="tabs reveal" id="stabs"></div><div id="spanels"></div>
+</div></section>
+
+<section id="data"><div class="wrap">
+  <div class="head reveal"><span class="eyebrow">Data</span><h2>What data the app uses, <em>and why.</em></h2><p class="lead">Nothing is hidden. This is every kind of data the app touches and where it goes.</p></div>
+    <div class="scroll-x reveal"><table class="tbl">
+      <thead><tr><th>Data</th><th>Why</th><th>Where it goes</th></tr></thead>
+      <tbody>
+        <tr><td>Your location</td><td>Find the weather where you are. Optional — you can search cities instead.</td><td>Read on your device. For Open-Meteo it is sent directly to that service; for the Cloudflare Worker sources only approximate coordinates (about 1 km) are sent.</td></tr>
+        <tr><td>City searches</td><td>Find coordinates of places you type, including in the travel planner.</td><td>Open-Meteo geocoding.</td></tr>
+        <tr><td>Forecast &amp; air quality</td><td>Conditions, hourly and daily forecast, UV, pressure, air quality and pollen (Europe).</td><td>Open-Meteo, WeatherAPI.com, Visual Crossing or OpenWeather, depending on your choice.</td></tr>
+        <tr><td>Radar, maps &amp; moon</td><td>Rain radar frames, map tiles and moon imagery.</td><td>RainViewer, OpenStreetMap and NASA public services.</td></tr>
+        <tr><td>Routes</td><td>Travel planner forecast along a route, with city names for stops.</td><td>OSRM routing, Open-Meteo and a public reverse-geocoding service. Routes are not stored on any CatsBlock server.</td></tr>
+        <tr><td>Camera</td><td>Live Moon viewfinder only.</td><td>Preview on screen. Nothing is captured, stored or sent.</td></tr>
+        <tr><td>Touch position</td><td>Animate rain, snow and touch effects.</td><td>Used on screen only. Never stored, logged or sent.</td></tr>
+        <tr><td>Saved cities &amp; settings</td><td>Remember your choices.</td><td>Stored only on your device. Clear app data or uninstall to remove them.</td></tr>
+        <tr><td>IP address</td><td>Limit abuse when using WeatherAPI.com, Visual Crossing or OpenWeather.</td><td>Cloudflare Worker by CatsBlock Corporation keeps only an irreversible hash for at most 12 hours. Open-Meteo does not use this proxy.</td></tr>
+      <tr><td>Approximate country (this website only)</td><td>Apply regional availability rules to the download.</td><td>A public IP-to-country lookup (api.country.is, with ipapi.co as a fallback). The result is kept only for the current browser session.</td></tr></tbody>
+    </table></div>
+  <p class="lead reveal" style="margin-top:20px;font-size:.95rem">Read the full <a href="#/privacy" class="grad" style="font-weight:600">Privacy Policy</a>.</p>
+</div></section>
+
+<section id="security"><div class="wrap">
+  <div class="head reveal"><span class="eyebrow">Security</span><h2>“Play Protect warned me.” <em>Here’s why.</em></h2><p class="lead">It is normal to see a warning when you install CatsBlock Weather. It does not mean the app is harmful — it means Google has not seen this app before.</p></div>
+    <div class="shield">
+      <div class="callout reveal"><h3><svg class="hi" viewBox="0 0 24 24"><path d="M12 3 2 20h20Z"/><path d="M12 10v4M12 17h.01"/></svg>Why the warning appears</h3><p>Play Protect is cautious with apps installed outside Google Play. In practice, the warning appears because:</p>
+        <ul><li>The APK does not come from Google Play and is signed by an independent developer.</li><li>Each new build is a brand-new file that Google has never scanned.</li><li>The app has features Play Protect treats carefully: install permission for its built-in updater, location, notifications, camera and background sync.</li></ul></div>
+      <div class="callout good reveal d1"><h3><svg class="hi" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>Why it stops after install</h3><p>Play Protect’s unfamiliar-app check happens when you install. Tap <b>More details → Install anyway</b> (or <b>Scan app</b>) and the file is analyzed. When nothing harmful is found, it does not warn again while you use the app. A later update can show the prompt once more, because it is a new file.</p></div>
+    </div>
+  <div style="margin-top:26px" class="reveal"><a class="btn primary" href="#/download">See the full safety details</a></div>
+</div></section>
+
+<section id="compare"><div class="wrap">
+  <div class="head center reveal"><span class="eyebrow">Why CatsBlock</span><h2>Better where it <em>counts.</em></h2><p class="lead">A comparison with the common pattern in recent, modern weather apps — based on what CatsBlock Weather actually does.</p></div>
+    <div class="scroll-x reveal"><table class="tbl">
+      <thead><tr><th>&nbsp;</th><th class="hl">CatsBlock Weather</th><th>Typical modern weather app</th></tr></thead>
+      <tbody>
+        <tr><td>Price</td><td class="hl yes">Free</td><td class="mid">Often free with ads, or a subscription</td></tr>
+        <tr><td>Ads &amp; trackers</td><td class="hl yes">None</td><td class="mid">Common</td></tr>
+        <tr><td>Account required</td><td class="hl yes">No</td><td class="mid">Often</td></tr>
+        <tr><td>Data source</td><td class="hl yes">You choose from 4 providers, or use your own key</td><td class="mid">Usually one fixed provider</td></tr>
+        <tr><td>Smart alerts</td><td class="hl yes">Clothing, UV, pollen, frost, pressure, air quality, official warnings</td><td class="mid">Mostly rain and severe weather</td></tr>
+        <tr><td>Moon &amp; eclipses</td><td class="hl yes">3D moon, live camera, eclipse alerts</td><td class="no">Rarely</td></tr>
+        <tr><td>Travel forecast</td><td class="hl yes">Route weather with city names and a map</td><td class="no">Rarely</td></tr>
+        <tr><td>Customization</td><td class="hl yes">AMOLED, accent colors, custom fonts, icon changer, units</td><td class="mid">Limited</td></tr>
+        <tr><td>Languages</td><td class="hl yes">10</td><td class="mid">Varies</td></tr>
+        <tr><td>Your data</td><td class="hl yes">Stays on your device</td><td class="mid">Frequently synced to servers</td></tr>
+        <tr><td>Code</td><td class="hl yes">Public on GitHub, built by public workflows</td><td class="no">Usually closed</td></tr>
+      </tbody>
+    </table></div>
+  <p class="lead reveal" style="margin:16px auto 0;text-align:center;font-size:.85rem">“Typical” describes common patterns, not any specific app.</p>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <div class="head center reveal"><span class="eyebrow">FAQ</span><h2>Common <em>questions.</em></h2></div>
+  <div class="faq reveal" id="faqList"></div>
+</div></section>
+
+<section class="final" id="get"><div class="wrap"><div class="box reveal">
+  <span class="eyebrow"><i></i> Latest for Android</span>
+  <h2>Get CatsBlock Weather <span class="grad">today.</span></h2>
+  <p class="lead">Recommended for Android 12 and newer. Works from Android 8.0.</p>
+  <a class="btn primary lg" href="#/download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 20h16"/></svg>Download the latest version</a>
+  <p class="small"><span data-rel="line">Latest build loads from GitHub</span></p>
+</div></div></section>
+</div>
+
+<div class="page" id="page-download">
+  <div class="pagehead"><div class="wrap">
+    <a class="back" href="#/"><svg class="hi" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></svg>Back</a>
+    <span class="eyebrow"><i></i> Latest for Android</span>
+    <h1>Download <span class="grad">CatsBlock Weather</span></h1>
+    <p class="lead" style="margin-top:18px">Recommended for Android 12 and newer. Read this page first — it explains the Play Protect warning, why the app is safe to install, and how to check it yourself.</p>
+  </div></div>
+  <div class="wrap" style="padding-bottom:clamp(56px,10vw,110px)">
+    <div class="dl-grid">
+      <div>
+        <div class="callout"><h3><svg class="hi" viewBox="0 0 24 24"><path d="M12 3 2 20h20Z"/><path d="M12 10v4M12 17h.01"/></svg>You may see a Play Protect warning</h3><p>It says Google has not seen this app before. That is expected for apps installed outside Google Play, and it is not a malware finding. Use <b>More details → Install anyway</b> or <b>Scan app</b>. Do not turn Play Protect off.</p></div>
+
+        <div class="sec"><h2>Why Play Protect detects it</h2>
+          <p>Play Protect checks apps for harmful behavior and also treats unfamiliar apps carefully. In practice, a few things make CatsBlock Weather look “new” to it:</p>
+          <div class="tl">
+            <div class="it"><div><b>Installed outside Google Play</b><span>The APK comes from GitHub, not the Play Store, and is signed with the developer’s own key rather than a key Google manages.</span></div></div>
+            <div class="it"><div><b>Every build is a new file</b><span>Each release is a new APK with a new fingerprint. Google has not scanned it yet, so the first install of each build can show a prompt.</span></div></div>
+            <div class="it"><div><b>Sensitive-sounding permissions</b><span>The built-in updater needs permission to install packages, plus location, notifications, camera (Live Moon) and background sync. Each one is explained below.</span></div></div>
+          </div>
+        </div>
+
+        <div class="sec"><h2>Why it doesn’t warn after installing</h2>
+          <p>The unfamiliar-app check runs at install time. When you choose <b>Scan app</b> or <b>Install anyway</b>, the app is analyzed. If no harmful behavior is found, Play Protect has nothing to flag while you use it, so the warning does not come back. When you update to a new build, you might see the prompt once more — that is the same new-file effect.</p>
+        </div>
+
+        <div class="sec"><h2>Is it safe? Check it yourself</h2>
+          <p>You should not have to take anyone’s word for it. These are things you can verify:</p>
+          <div class="tl">
+            <div class="it"><div><b>The source code is public</b><span>Read it at <a class="grad" href="https://github.com/catsblock/CatsBlock-Weather-v2" target="_blank" rel="noopener">github.com/catsblock/CatsBlock-Weather-v2</a>.</span></div></div>
+            <div class="it"><div><b>The APK is built in public</b><span>Releases are produced by a GitHub Actions workflow in that repository (<span class="mono">Build APK</span>) and published as <span class="mono">build-N</span> releases, so you can see exactly how each file was made.</span></div></div>
+            <div class="it"><div><b>Compare the SHA-256</b><span>When GitHub provides it, the checksum is shown on this page. Compare it with the file you downloaded (<span class="mono">sha256sum file.apk</span> on a computer, or any hash app on Android).</span></div></div>
+            <div class="it"><div><b>Scan it with VirusTotal</b><span>Upload the APK to virustotal.com and read the results from many engines. A single odd result from one engine on a new APK is common; look at the overall picture.</span></div></div>
+            <div class="it"><div><b>Review the permissions</b><span>Android shows them before you install and in Settings → Apps → CatsBlock Weather → Permissions. The app works with location and camera denied.</span></div></div>
+            <div class="it"><div><b>No ads, accounts or analytics</b><span>The privacy policy states the app has none, and stores your cities and preferences only on your device.</span></div></div>
+          </div>
+          <p style="margin-top:18px">If anything doesn’t match, don’t install. Download only from this page or the repository’s Releases.</p>
+        </div>
+
+        <div class="sec"><h2>How to install</h2>
+          <div class="tl">
+            <div class="it"><div><b>Download the APK</b><span>Tap the download button. If your browser warns that this type of file can be harmful, choose <b>Download anyway</b>.</span></div></div>
+            <div class="it"><div><b>Allow installing from this app</b><span>Android asks you to allow your browser or file manager to install apps. Allow it for this install; you can turn it off afterwards.</span></div></div>
+            <div class="it"><div><b>Install</b><span>Tap Install. If Play Protect appears, tap <b>More details</b>, then <b>Install anyway</b> — or choose <b>Scan app</b> and let it finish.</span></div></div>
+            <div class="it"><div><b>Open and set up</b><span>Allow notifications, optionally location, then pick your weather source in Settings.</span></div></div>
+          </div>
+        </div>
+
+        <div class="sec"><h2>What each permission is for</h2>
+          <div class="scroll-x"><table class="tbl"><thead><tr><th>Permission</th><th>Used for</th></tr></thead><tbody>
+            <tr><td>Internet &amp; network state</td><td>Download forecasts, maps and radar, and respect your “mobile data” setting.</td></tr>
+            <tr><td>Location (approximate / precise)</td><td>Show the weather where you are. Optional.</td></tr>
+            <tr><td>Notifications</td><td>Rain, snow, eclipse, app-update and Alerts &amp; warnings notifications.</td></tr>
+            <tr><td>Camera</td><td>Live Moon viewfinder preview only. Nothing is captured, stored or sent.</td></tr>
+            <tr><td>Install packages</td><td>The built-in updater downloads the new APK from the GitHub release and asks Android to install it. Android still needs your confirmation.</td></tr>
+            <tr><td>Foreground service (data sync)</td><td>Let background weather updates finish reliably.</td></tr>
+          </tbody></table></div>
+        </div>
+
+        <div class="sec"><h2>Requirements</h2>
+          <p><b>Recommended:</b> Android 12 or newer. <b>Minimum:</b> Android 8.0. About 40–60 MB of free storage is typical; the exact size is shown on the right.</p>
+        </div>
+      </div>
+
+      <aside class="dl-side">
+        <span class="badge">● Latest version</span>
+        <div class="v" data-rel="version">Loading…</div>
+        <p style="color:var(--muted);font-size:.92rem" data-rel="name">Reading the newest release from GitHub</p>
+        <div class="kv">
+          <div><span>Platform</span><b>Android 12+ recommended</b></div>
+          <div><span>Minimum</span><b>Android 8.0</b></div>
+          <div><span>Size</span><b data-rel="size">—</b></div>
+          <div><span>Released</span><b data-rel="date">—</b></div>
+          <div><span>Package</span><b>com.catsblock.weather</b></div>
+        </div>
+        <a class="btn primary lg" style="width:100%" id="dlBtn" href="https://github.com/catsblock/CatsBlock-Weather-v2/releases/latest" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 20h16"/></svg><span id="dlText">Download APK</span></a>
+        <a class="btn ghost" style="width:100%;margin-top:10px" href="https://github.com/catsblock/CatsBlock-Weather-v2/releases" target="_blank" rel="noopener">All releases on GitHub</a>
+        <div class="hash" id="hashRow" style="display:none"><b style="color:var(--soft)">SHA-256</b><br><span data-rel="hash"></span></div>
+        <p style="color:var(--muted);font-size:.8rem;margin-top:16px">Downloads come straight from GitHub. This site never hosts or modifies the file.</p>
+      </aside>
+    </div>
+  </div>
+</div>
+<div class="page" id="page-privacy">
+  <div class="pagehead"><div class="wrap">
+    <a class="back" href="#/"><svg class="hi" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></svg>Back</a>
+    <h1>Privacy <span class="grad">Policy</span></h1>
+    <p class="lead" style="margin-top:18px">How CatsBlock Weather handles your data. Last updated 2026-10-27.</p>
+  </div></div>
+  <div class="wrap legal" style="padding-bottom:clamp(56px,10vw,110px)">
+    <h2>Company and app</h2>
+    <p>This Privacy Policy applies to the application CatsBlock Weather (the “App”), published by CatsBlock Corporation (“CatsBlock Corporation”, “we”, “us”).</p>
+    <p>By downloading, opening or using CatsBlock Weather, you acknowledge that you have read this Privacy Policy and agree to it. If you do not agree, do not use the App.</p>
+    <h2>Data we process</h2>
+    <p>CatsBlock Corporation does not run user accounts, analytics or advertising, does not sell your data and does not build user profiles. The App stores saved cities and preferences on your device. When a Cloudflare Worker data source is used, limited technical data is processed to operate and protect the service: your IP address and approximate coordinates, as described below.</p>
+    <h2>Location permission</h2>
+    <p>If you allow location access, your position is read on your device to find the weather where you are. When a data source that uses the Cloudflare Worker is selected, approximate coordinates (rounded to about 1 km) are sent through it. You can revoke location permission at any time in your device settings.</p>
+    <h2>Data stored on your device</h2>
+    <p>Saved cities and your preferences are stored only on your device and can be removed at any time by clearing the App data or uninstalling the App.</p>
+    <h2>Visual effects and touch input</h2>
+    <p>Rain, snow and touch effects are drawn on your device using its graphics processor. Where you touch a weather card is used only to animate the effect on screen; touch positions are never stored, logged or sent anywhere.</p>
+    <h2>Third-party public APIs</h2>
+    <p>To show weather, coordinates and city searches are sent to free, public third-party services such as Open-Meteo, WeatherAPI.com, Visual Crossing and OpenWeather. Moon images and map tiles are loaded from public providers such as NASA and OpenStreetMap. These providers receive your IP address as part of the connection, are not operated by CatsBlock Corporation, and are governed by their own terms and privacy policies.</p>
+    <p>When you use the travel planner, the places you type are sent to Open-Meteo to find their coordinates, the start and destination coordinates are sent to the public OSRM routing service to calculate the route, and coordinates of points along the route are sent to Open-Meteo to get the forecast. These services are not operated by CatsBlock Corporation. The planner does not store routes on any CatsBlock Corporation server.</p>
+    <h2>Cloudflare Worker proxy</h2>
+    <p>When the WeatherAPI.com, Visual Crossing or OpenWeather data source is selected, requests go through a Cloudflare Worker operated by CatsBlock Corporation, which keeps API keys off your device and limits abuse. To enforce request limits it uses only your IP address; the Worker keeps only an irreversible hash of it, for at most 12 hours, and does not store the original value. No device identifier is collected or sent. Weather responses for rounded coordinates are cached for about 15 minutes. Cloudflare, as infrastructure provider, may process connection data under its own terms. The Open-Meteo data source does not use this proxy.</p>
+    <h2>Security</h2>
+    <p>We apply reasonable technical measures such as encrypted connections, request validation and rate limiting, but no system is completely secure, and we cannot guarantee that the service will be free of errors, vulnerabilities or unauthorized access.</p>
+    <h2>Limitation of liability</h2>
+    <p>The App and its servers are provided “as is” and “as available”, without warranties of any kind. To the fullest extent permitted by applicable law, CatsBlock Corporation is not liable for server downtime or interruptions, data leaks, security breaches, vulnerabilities, errors, inaccurate weather data, or any loss or damage resulting from the use of, or inability to use, the App or its servers, and by using the App you agree not to bring claims against CatsBlock Corporation for these reasons. Weather data accuracy is the responsibility of the third-party providers. Nothing in this policy excludes liability that cannot be excluded by law or limits rights you have under mandatory data protection or consumer laws.</p>
+    <h2>No individual support</h2>
+    <p>CatsBlock Corporation does not provide individual support and offers no contact channel. Requests, questions or messages cannot be answered.</p>
+    <h2>Changes to this policy</h2>
+    <p>We may update this policy at any time. Continuing to use the App after an update means you accept it. Last updated: 2026-10-27.</p>
+  </div>
+</div>
+</main>
+
+<footer><div class="wrap">
+  <div class="fgrid">
+    <div><a class="logo" href="#/">CatsBlock Weather</a><p>A free, private and beautiful weather app for Android. No ads, no accounts, no analytics.</p></div>
+    <div><h4>Product</h4><a href="#/features">Features</a><a href="#/settings">Settings</a><a href="#/compare">Why CatsBlock</a><a href="#/download">Download</a></div>
+    <div><h4>Learn</h4><a href="#/data">Data we use</a><a href="#/security">Play Protect</a><a href="#/faq">FAQ</a></div>
+    <div><h4>Legal &amp; code</h4><a href="#/privacy">Privacy Policy</a><a href="https://github.com/catsblock/CatsBlock-Weather-v2" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/catsblock/CatsBlock-Weather-v2/releases" target="_blank" rel="noopener">Releases</a></div>
+  </div>
+  <div class="fbot"><span>© 2026 CatsBlock Corporation. All rights reserved.</span><span class="ok"><i></i>Free · No ads · No account</span></div>
+</div></footer>
+
+<script>
+(function(){
+'use strict';
+var CFG={owner:'catsblock',repo:'CatsBlock-Weather-v2'};
+var PAGES=['download','privacy'];
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function route(){
+  var h=(location.hash||'').replace(/^#\/?/,'').split('?')[0];
+  var isPage=PAGES.indexOf(h)>-1;
+  $$('.page').forEach(function(p){p.classList.remove('on')});
+  $('#page-'+(isPage?h:'home')).classList.add('on');
+  closeMenu();
+  if(isPage){window.scrollTo(0,0);if(h==='download')loadRelease();observe();return}
+  var target=h&&document.getElementById(h);
+  if(target){setTimeout(function(){target.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})},60)}else window.scrollTo(0,0);
+  observe();
+}
+window.addEventListener('hashchange',route);
+
+var nav=$('#nav'),menu=$('#menu'),burger=$('#burger');
+function closeMenu(){menu.classList.remove('open');burger.setAttribute('aria-expanded','false')}
+burger.addEventListener('click',function(){var o=menu.classList.toggle('open');burger.setAttribute('aria-expanded',o)});
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>20)},{passive:true});
+
+var io=null;
+function observe(){
+  if(!('IntersectionObserver' in window)){$$('.reveal').forEach(function(e){e.classList.add('in')});return}
+  if(!io){io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);$$('[data-count]',e.target).forEach(count)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'})}
+  $$('.reveal:not(.in)').forEach(function(e){io.observe(e)});
+}
+function count(el){
+  var to=+el.getAttribute('data-count'),t0=null;
+  if(reduce||to===0){el.textContent=to;return}
+  function step(t){if(!t0)t0=t;var p=Math.min((t-t0)/1100,1);el.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(step)}
+  requestAnimationFrame(step);
+}
+document.addEventListener('pointermove',function(e){var c=e.target.closest&&e.target.closest('.card');if(!c)return;var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px')},{passive:true});
+
+try{$('#today').textContent=new Date().toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'})}catch(e){}
+
+/* label table cells for the stacked mobile layout */
+$$('.tbl').forEach(function(tb){var h=$$('thead th',tb).map(function(x){return x.textContent.replace(/\u00a0/g,'').trim()});
+  $$('tbody tr',tb).forEach(function(r){$$('td',r).forEach(function(c,i){if(i&&h[i])c.setAttribute('data-label',h[i])})})});
+var sources=['Open-Meteo','WeatherAPI.com','Visual Crossing','OpenWeather','RainViewer','OpenStreetMap','NASA','OSRM routing','Cloudflare'];
+$('#track').innerHTML=sources.concat(sources,sources,sources).map(function(s){return '<span>'+s+'</span>'}).join('');
+
+/* phone preview: user-driven, slow auto-advance until touched */
+var ICONS={su:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',cl:'<path d="M7 19a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 12a3.5 3.5 0 0 1-.5 7Z"/>',ps:'<path d="M9 3v1.5M3.6 6l1 1M2 11h1.5M14.4 6l-1 1"/><circle cx="9" cy="10" r="3"/><path d="M8 20a3.5 3.5 0 0 1-.3-7A5 5 0 0 1 17.3 13 3.5 3.5 0 0 1 17 20Z"/>',rn:'<path d="M7 15a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 8a3.5 3.5 0 0 1-.5 7ZM8 18l-1 3M12 18l-1 3M16 18l-1 3"/>',mo:'<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/>',st:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8Z"/>'};
+var SC=[
+ {name:'Cloudy',icon:'ps',cls:'',time:'14:05',t:24,c:'Partly cloudy',hl:'H 27° · L 17°',uv:6,uvp:.52,w:'12 km/h',dir:40,tint:'#d7e3df',orb:'#ec4b22',x:'78%',y:'18%',toast:'Light jacket after 18:00',rain:[0,0,6,0,0,8],h:[['Now',24,'ps'],['15',25,'su'],['16',25,'su'],['17',23,'ps'],['18',21,'cl']]},
+ {name:'Rain',icon:'rn',cls:'rain',time:'09:20',t:17,c:'Light rain',hl:'H 19° · L 14°',uv:1,uvp:.08,w:'19 km/h',dir:200,tint:'#c3cccb',orb:'#6b7c82',x:'30%',y:'8%',toast:'Rain stops around 11:30',rain:[62,80,56,34,16,6],h:[['Now',17,'rn'],['10',16,'rn'],['11',16,'rn'],['12',17,'ps'],['13',18,'ps']]},
+ {name:'Sunny',icon:'su',cls:'sun',time:'13:10',t:31,c:'Sunny',hl:'H 33° · L 21°',uv:9,uvp:.78,w:'8 km/h',dir:120,tint:'#f1d3a6',orb:'#ec4b22',x:'82%',y:'6%',toast:'UV peaks at 9 · wear SPF 30+',rain:[0,0,0,0,0,0],h:[['Now',31,'su'],['14',32,'su'],['15',33,'su'],['16',32,'su'],['17',30,'ps']]},
+ {name:'Night',icon:'mo',cls:'night',time:'22:40',t:14,c:'Clear night',hl:'H 25° · L 12°',uv:0,uvp:.02,w:'6 km/h',dir:300,tint:'#26305f',orb:'#f1e9cf',x:'70%',y:'24%',toast:'Clear sky · good night for the moon',rain:[0,0,0,0,0,0],h:[['Now',14,'mo'],['23',13,'mo'],['00',12,'mo'],['01',12,'st'],['02',11,'mo']]}
+];
+var scr=$('#screen'),hero=$('#top'),dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+var ico=function(k){return '<svg viewBox="0 0 24 24">'+ICONS[k]+'</svg>'};
+for(var i=0;i<14;i++){var d=document.createElement('i');d.style.left=(Math.random()*110-5)+'%';d.style.animationDuration=(1.1+Math.random()*.7)+'s';d.style.animationDelay=(-Math.random()*2)+'s';$('#drops').appendChild(d)}
+$('#rbars').innerHTML='<i></i><i></i><i></i><i></i><i></i><i></i>';
+$('#seg').innerHTML=SC.map(function(s,i){return '<button role="tab" data-i="'+i+'"><span class="ic">'+ico(s.icon)+'</span><span>'+s.name+'</span></button>'}).join('');
+function curve(ts){var mn=Math.min.apply(0,ts),mx=Math.max.apply(0,ts),r=Math.max(mx-mn,4),n=ts.length,p=ts.map(function(v,i){return [i*240/(n-1),38-(v-mn)/r*30]}),d='M'+p[0][0]+' '+p[0][1];
+  for(var i=1;i<n;i++){var a=p[i-1],b=p[i],m=(a[0]+b[0])/2;d+=' C'+m+' '+a[1]+' '+m+' '+b[1]+' '+b[0]+' '+b[1]}
+  $('#cLine').setAttribute('d',d);$('#cArea').setAttribute('d',d+' L240 44 L0 44Z')}
+var si=0,auto=null;
+function scene(n){
+  var s=SC[n];si=n;scr.className='screen '+s.cls;
+  $('#clock').textContent=s.time;$('#sTemp').textContent=s.t+'\u00b0';$('#sCond').textContent=s.c;$('#sHL').textContent=s.hl;
+  $('#sUv').textContent=s.uv;$('#uvDot').style.setProperty('--p',(s.uvp*100)+'%');$('#sWind').textContent=s.w;$('#arrow').style.transform='rotate('+s.dir+'deg)';
+  $('#toastT').textContent=s.toast;curve(s.h.map(function(x){return x[1]}));
+  $('#sHours').innerHTML=s.h.map(function(x){return '<div><span>'+x[0]+'</span><span class="ic">'+ico(x[2])+'</span><b>'+x[1]+'\u00b0</b></div>'}).join('');
+  $$('#rbars i').forEach(function(e,k){e.style.setProperty('--h',Math.max(s.rain[k],4)+'%')});
+  $$('#seg button').forEach(function(b,k){b.setAttribute('aria-selected',k===n)});
+  var fx=$$('.fx',scr);fx.forEach(function(e){e.classList.remove('go')});void scr.offsetWidth;
+  fx.forEach(function(e,k){e.style.animationDelay=(k*70)+'ms';e.classList.add('go')});
+  hero.style.setProperty('--tint',dark?'#0d1110':s.tint);hero.style.setProperty('--orb',s.orb);hero.style.setProperty('--orbx',s.x);hero.style.setProperty('--orby',s.y);
+}
+$('#seg').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;clearInterval(auto);scene(+b.getAttribute('data-i'))});
+scene(0);
+if(!reduce)auto=setInterval(function(){if(document.hidden||window.scrollY>window.innerHeight)return;scene((si+1)%SC.length)},7000);
+
+
+var SETTINGS={
+ 'Appearance':[['Theme','System, light or dark'],['AMOLED black','True black backgrounds to save battery'],['Accent color','Weather-based, system or any hex color'],['Text size','Small to large'],['Fonts','Built-in styles or your own .ttf/.otf file'],['App icon changer','Swap the launcher icon']],
+ 'Layout':[['Compact current conditions','A tighter header'],['Life index card','Show or hide'],['Precipitation card','Show or hide'],['Weather sounds','Ambient sounds for conditions']],
+ 'Units':[['Temperature','Celsius or Fahrenheit'],['Wind speed','km/h, mph, m/s or knots'],['Atmospheric pressure','hPa, kPa, inHg or mmHg'],['Precipitation','mm, in or cm']],
+ 'Weather data':[['Data provider','Open-Meteo, WeatherAPI.com, Visual Crossing or OpenWeather'],['Personal access keys','Use your own API key for a provider'],['Mobile data updates','Allow or block updates on mobile data']],
+ 'Updates':[['Update weather in background','Turn periodic refresh on or off'],['Update interval','Choose how often to refresh'],['Quiet hours','Never update from 0:30 to 6:00'],['Check for updates','Built-in app updater from GitHub releases']],
+ 'Notifications':[['Rain alerts','Be notified before rain arrives'],['Snow alerts','Be notified before snow arrives'],['Eclipse alerts','Solar and lunar eclipses near you'],['Alerts &amp; warnings','Clothing, UV, pollen, frost, evening briefing, pressure, air quality and official warnings'],['App update alerts','Notify when a new version is available']],
+ 'Language':[['App language','English, Português (BR/PT), Español, Français, Русский, Deutsch, Italiano, 한국어, Bahasa Indonesia']]
+};
+var tabs=$('#stabs'),panels=$('#spanels');
+Object.keys(SETTINGS).forEach(function(k,i){
+  var b=document.createElement('button');b.className='tab'+(i?'':' on');b.textContent=k;b.setAttribute('data-k',k);tabs.appendChild(b);
+  var p=document.createElement('div');p.className='panel'+(i?'':' on');p.setAttribute('data-k',k);
+  p.innerHTML=SETTINGS[k].map(function(o){return '<div class="opt"><b>'+o[0]+'</b><span>'+o[1]+'</span></div>'}).join('');
+  panels.appendChild(p);
+});
+tabs.addEventListener('click',function(e){
+  var b=e.target.closest('.tab');if(!b)return;var k=b.getAttribute('data-k');
+  $$('.tab',tabs).forEach(function(x){x.classList.toggle('on',x===b)});
+  $$('.panel',panels).forEach(function(x){x.classList.toggle('on',x.getAttribute('data-k')===k)});
+});
+var FAQ=[
+ ['Is CatsBlock Weather free?','<p>Yes. There are no ads, subscriptions or in-app purchases, and no account is needed.</p>'],
+ ['Why does Play Protect warn me when I install?','<p>Because the app is installed from outside Google Play and every new build is a file Google has not seen yet. It is an “unfamiliar app” prompt, not a malware verdict. Choose <b>More details → Install anyway</b> or <b>Scan app</b>.</p><p>See <a class="grad" href="#/download">the download page</a> for details and ways to verify the file yourself.</p>'],
+ ['Why doesn’t Play Protect warn me after I install it?','<p>The unfamiliar-app check happens at install time. After the file is analyzed and nothing harmful is found, there is nothing to flag while you use the app. A new update is a new file, so you may see the prompt once again.</p>'],
+ ['Is the app safe?','<p>You can check it yourself: the source code is public on GitHub, APKs are built by a public GitHub Actions workflow, the permissions are listed and explained, and the privacy policy states there are no ads, analytics or accounts. Scan the file on VirusTotal if you want a second opinion, and download only from this site or the official repository.</p>'],
+ ['Which Android versions are supported?','<p>Android 12 or newer is recommended for the best experience. The app installs from Android 8.0.</p>'],
+ ['What data does the app collect?','<p>No accounts, analytics or advertising. Saved cities and preferences stay on your device. Weather providers receive coordinates or city searches to return a forecast, and the optional Cloudflare Worker keeps only a short-lived hash of your IP for rate limiting. See the <a class="grad" href="#/data">data table</a> and the <a class="grad" href="#/privacy">Privacy Policy</a>.</p>'],
+ ['Why does the app ask for the camera?','<p>Only for the Live Moon screen’s viewfinder. The camera shows a live preview; nothing is captured, stored or sent. You can deny it and the rest of the app keeps working.</p>'],
+ ['Why does it need permission to install packages?','<p>For the built-in updater. It fetches the newest APK from the GitHub release and asks Android to install it. Android still requires your confirmation, and you can turn update checks off.</p>'],
+ ['Which weather source should I pick?','<p>Open-Meteo is the default and works without a key or proxy. WeatherAPI.com, Visual Crossing and OpenWeather are available through the Cloudflare Worker, or with your own key.</p>'],
+ ['Why am I not getting alerts?','<ul><li>Allow notifications for the app in Android settings.</li><li>Set the app’s battery usage to “Unrestricted”, since some phones pause background work.</li><li>Check that background updates are on and that mobile data updates are allowed if you are not on Wi-Fi.</li><li>Alerts run at the hour you chose and may be delayed a few minutes by Android power saving.</li></ul>'],
+ ['How do I update the app?','<p>Use Settings → Check for updates, or download the newest build from this site. Your settings and saved cities are kept when you update over the existing install.</p>'],
+ ['Can I get support?','<p>CatsBlock Corporation does not provide individual support and has no contact channel, as stated in the Privacy Policy. This page and the public repository are the best sources of information.</p>']
+];
+$('#faqList').innerHTML=FAQ.map(function(f,i){return '<details'+(i===0?' open':'')+'><summary>'+f[0]+'</summary><div class="ans">'+f[1]+'</div></details>'}).join('');
+var releaseLoaded=false;
+function setRel(k,v){$$('[data-rel="'+k+'"]').forEach(function(e){e.textContent=v})}
+function mb(n){return (n/1048576).toFixed(1)+' MB'}
+function applyRelease(r){
+  var apk=(r.assets||[]).filter(function(a){return /\.apk$/i.test(a.name)})[0];
+  var m=/build-(\d+)/i.exec(r.tag_name||'');
+  setRel('version',m?'Version 1.0.'+m[1]:(r.tag_name||'Latest'));
+  setRel('name',(r.name||r.tag_name||'')+(apk?' · '+apk.name:''));
+  setRel('date',r.published_at?new Date(r.published_at).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):'—');
+  setRel('line',(r.name||r.tag_name||'Latest build')+(apk?' · '+mb(apk.size):'')+' · from GitHub');
+  if(apk){
+    setRel('size',mb(apk.size));
+    var b=$('#dlBtn');b.href=apk.browser_download_url;b.removeAttribute('target');b.setAttribute('download',apk.name);
+    $('#dlText').textContent='Download APK'+(m?' · Build '+m[1]:'');
+    if(apk.digest&&/^sha256:/i.test(apk.digest)){setRel('hash',apk.digest.slice(7));$('#hashRow').style.display='block'}
+  }else{
+    setRel('size','—');$('#dlBtn').href=r.html_url||('https://github.com/'+CFG.owner+'/'+CFG.repo+'/releases/latest');
+  }
+}
+function loadRelease(){
+  if(releaseLoaded||!GEO.ready||GEO.blocked)return;
+  var key='cbw_release',cached=null;
+  try{cached=JSON.parse(sessionStorage.getItem(key)||'null')}catch(e){}
+  if(cached&&Date.now()-cached.t<600000){releaseLoaded=true;applyRelease(cached.r);return}
+  fetch('https://api.github.com/repos/'+CFG.owner+'/'+CFG.repo+'/releases/latest',{headers:{'Accept':'application/vnd.github+json'}})
+    .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+    .then(function(r){releaseLoaded=true;try{sessionStorage.setItem(key,JSON.stringify({t:Date.now(),r:r}))}catch(e){}applyRelease(r)})
+    .catch(function(){
+      setRel('version','Latest build');setRel('name','Could not read the release info. The button opens the latest release on GitHub.');setRel('line','Latest build on GitHub');
+    });
+}
+
+/* regional availability (client-side; see notes) */
+var GEO={ready:false,blocked:false};
+var RULES={
+ JP:{block:1,lang:'ja',dir:'ltr',t:'\u30c0\u30a6\u30f3\u30ed\u30fc\u30c9\u306f\u5229\u7528\u3067\u304d\u307e\u305b\u3093',b:'\u30c0\u30a6\u30f3\u30ed\u30fc\u30c9\u5229\u7528\u4e0d\u53ef',m:'\u653f\u5e9c\u306f\u3001\u5929\u6c17\u4e88\u5831\u3084\u904e\u53bb\u306e\u30c7\u30fc\u30bf\u306b\u8aa4\u308a\u304c\u3042\u308b\u53ef\u80fd\u6027\u306e\u3042\u308b\u5929\u6c17\u4e88\u5831\u30a2\u30d7\u30ea\u3092\u8a31\u53ef\u3057\u3066\u3044\u307e\u305b\u3093\u3002\u6cd5\u7684\u554f\u984c\u3092\u907f\u3051\u308b\u305f\u3081\u306b\u3001\u305d\u306e\u3088\u3046\u306a\u30a2\u30d7\u30ea\u3092\u5236\u9650\u3057\u3066\u3044\u308b\u306e\u3067\u3059\u3002'},
+ IR:{block:1,lang:'fa',dir:'rtl',t:'\u062f\u0627\u0646\u0644\u0648\u062f \u062f\u0631 \u062f\u0633\u062a\u0631\u0633 \u0646\u06cc\u0633\u062a',b:'\u062f\u0627\u0646\u0644\u0648\u062f \u062f\u0631 \u062f\u0633\u062a\u0631\u0633 \u0646\u06cc\u0633\u062a',m:'API\u0647\u0627\u06cc \u0622\u0645\u0631\u06cc\u06a9\u0627\u06cc \u0644\u0627\u062a\u06cc\u0646 \u062f\u0631 \u06a9\u0634\u0648\u0631 \u0634\u0645\u0627 \u0645\u0633\u062f\u0648\u062f \u0634\u062f\u0647\u200c\u0627\u0646\u062f.'},
+ SY:{block:1,lang:'ar',dir:'rtl',t:'\u0627\u0644\u062a\u0646\u0632\u064a\u0644 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d',b:'\u0627\u0644\u062a\u0646\u0632\u064a\u0644 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d',m:'\u0648\u0627\u062c\u0647\u0627\u062a \u0628\u0631\u0645\u062c\u0629 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a (API) \u0627\u0644\u062e\u0627\u0635\u0629 \u0628\u0623\u0645\u0631\u064a\u0643\u0627 \u0627\u0644\u0644\u0627\u062a\u064a\u0646\u064a\u0629 \u0645\u062d\u0638\u0648\u0631\u0629 \u0641\u064a \u0628\u0644\u062f\u0643.'},
+ CU:{block:1,lang:'es',dir:'ltr',t:'Descarga no disponible',b:'Descarga no disponible',m:'Las API de Am\u00e9rica Latina est\u00e1n bloqueadas en tu pa\u00eds.'},
+ IN:{block:0,lang:'en',dir:'ltr',t:'',b:'',m:'Service unavailable due to laws in your region.'}
+};
+function getCountry(){
+  var q=/[?&]geo=([A-Za-z]{2})/.exec(location.search),local=location.protocol==='file:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  if(q&&local)return Promise.resolve(q[1].toUpperCase());
+  var c=null;try{c=sessionStorage.getItem('cbw_cc')}catch(e){}
+  if(c)return Promise.resolve(c);
+  function f(url,pick){var ac=window.AbortController?new AbortController():null,tm=setTimeout(function(){if(ac)ac.abort()},4500);
+    return fetch(url,ac?{signal:ac.signal}:{}).then(function(r){if(!r.ok)throw 0;return pick(r)}).then(function(v){clearTimeout(tm);if(!/^[A-Z]{2}$/.test(v))throw 0;return v})}
+  return f('https://api.country.is/',function(r){return r.json().then(function(j){return String(j.country||'').toUpperCase()})})
+    .catch(function(){return f('https://ipapi.co/country/',function(r){return r.text().then(function(s){return s.trim().toUpperCase()})})})
+    .then(function(v){try{sessionStorage.setItem('cbw_cc',v)}catch(e){}return v});
+}
+function off(el,label){
+  var lg=el.classList.contains('lg')||el.id==='dlBtn';
+  ['href','download','target'].forEach(function(a){el.removeAttribute(a)});
+  el.classList.add('is-off');el.setAttribute('aria-disabled','true');el.setAttribute('tabindex','-1');
+  if(label&&lg){var dt=$('#dlText');if(el.id==='dlBtn'&&dt)dt.textContent=label;else{var tn=Array.prototype.filter.call(el.childNodes,function(n){return n.nodeType===3&&n.nodeValue.trim()}).pop();if(tn)tn.nodeValue=label}}
+}
+function applyGeo(cc){
+  GEO.ready=true;var r=RULES[cc];
+  if(!r){loadRelease();return}
+  var g=$('#geo');g.lang=r.lang;g.dir=r.dir;$('#geoT').textContent=r.t;$('#geoT').hidden=!r.t;$('#geoM').textContent=r.m;g.hidden=false;document.body.classList.add('has-geo');
+  if(!r.block){var x=$('#geoX');x.hidden=false;x.onclick=function(){g.hidden=true;document.body.classList.remove('has-geo')};loadRelease();return}
+  GEO.blocked=true;
+  $$('a[href="#/download"],a[href*="github.com"]').forEach(function(a){off(a,r.b)});
+  var rel=$('#dlBtn');if(rel)off(rel,r.b);
+}
+getCountry().then(applyGeo,function(){GEO.ready=true;loadRelease()});
+route();observe();
+})();
+</script>
+</body>
+</html>
