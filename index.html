@@ -835,14 +835,16 @@ var RULES={
  CU:{block:1,lang:'es',dir:'ltr',t:'Descarga no disponible',b:'Descarga no disponible',m:'Las API de Am\u00e9rica Latina est\u00e1n bloqueadas en tu pa\u00eds.'},
  IN:{block:0,lang:'en',dir:'ltr',t:'',b:'',m:'Service unavailable due to laws in your region.'}
 };
+var TZ={'Asia/Tokyo':'JP','Asia/Tehran':'IR','Asia/Damascus':'SY','America/Havana':'CU','Asia/Kolkata':'IN','Asia/Calcutta':'IN'};
+function tzCountry(){try{return TZ[Intl.DateTimeFormat().resolvedOptions().timeZone]||null}catch(e){return null}}
 function getCountry(){
-  var P=[['https://api.country.is/'],['https://get.geojs.io/v1/ip/country.json'],['https://ipapi.co/country/','t']];
+  var P=[['https://api.country.is/'],['https://get.geojs.io/v1/ip/country.json'],['https://ipwho.is/'],['https://api.db-ip.com/v2/free/self'],['https://ipapi.co/country/','t']];
   return new Promise(function(res,rej){
     var left=P.length,got=[],done=false,grace=null,cap=setTimeout(fin,3500);
     function fin(){if(done)return;done=true;clearTimeout(cap);clearTimeout(grace);var hit=got.filter(function(c){return RULES[c]})[0]||got[0];if(hit)res(hit);else rej()}
     P.forEach(function(p){
       var ac=window.AbortController?new AbortController():null;setTimeout(function(){if(ac)ac.abort()},3400);
-      fetch(p[0],ac?{signal:ac.signal}:{}).then(function(r){if(!r.ok)throw 0;return p[1]==='t'?r.text():r.json().then(function(j){return Array.isArray(j)?j[0].country:j.country})})
+      fetch(p[0],ac?{signal:ac.signal}:{}).then(function(r){if(!r.ok)throw 0;return p[1]==='t'?r.text():r.json().then(function(j){if(Array.isArray(j))j=j[0]||{};return j.country_code||j.countryCode||j.country})})
         .then(function(v){v=String(v||'').trim().toUpperCase();if(/^[A-Z]{2}$/.test(v)){got.push(v);if(RULES[v])fin();else if(!grace)grace=setTimeout(fin,1200)}})
         .catch(function(){}).then(function(){if(--left===0)fin()});
     });
@@ -864,7 +866,7 @@ function applyGeo(cc){
   var rel=$('#dlBtn');if(rel)off(rel,r.b);
 }
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="#/download"],a[href*="github.com"],#dlBtn');if(a&&(!GEO.ready||GEO.blocked)){e.preventDefault();e.stopPropagation()}},true);
-getCountry().then(applyGeo,function(){GEO.ready=true;document.body.classList.remove('geo-pending');loadRelease()});
+getCountry().then(applyGeo,function(){var c=tzCountry();if(c){applyGeo(c);return}GEO.ready=true;document.body.classList.remove('geo-pending');loadRelease()});
 route();observe();
 })();
 </script>
