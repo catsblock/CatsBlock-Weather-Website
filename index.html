@@ -844,29 +844,54 @@ function getCountry(){
     function fin(){if(done)return;done=true;clearTimeout(cap);clearTimeout(grace);var hit=got.filter(function(c){return RULES[c]})[0]||got[0];if(hit)res(hit);else rej()}
     P.forEach(function(p){
       var ac=window.AbortController?new AbortController():null;setTimeout(function(){if(ac)ac.abort()},3400);
-      fetch(p[0],ac?{signal:ac.signal}:{}).then(function(r){if(!r.ok)throw 0;return p[1]==='t'?r.text():r.json().then(function(j){if(Array.isArray(j))j=j[0]||{};return j.country_code||j.countryCode||j.country})})
+      fetch(p[0],ac?{cache:'no-store',signal:ac.signal}:{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return p[1]==='t'?r.text():r.json().then(function(j){if(Array.isArray(j))j=j[0]||{};return j.country_code||j.countryCode||j.country})})
         .then(function(v){v=String(v||'').trim().toUpperCase();if(/^[A-Z]{2}$/.test(v)){got.push(v);if(RULES[v])fin();else if(!grace)grace=setTimeout(fin,1200)}})
         .catch(function(){}).then(function(){if(--left===0)fin()});
     });
   });
 }
+var OFF=[],checking=false,lastCheck=0,pend=null;
 function off(el,label){
   var lg=el.classList.contains('lg')||el.id==='dlBtn';
+  var o={el:el,href:el.getAttribute('href'),dl:el.getAttribute('download'),tg:el.getAttribute('target')};
   ['href','download','target'].forEach(function(a){el.removeAttribute(a)});
   el.classList.add('is-off');el.setAttribute('aria-disabled','true');el.setAttribute('tabindex','-1');
-  if(label&&lg){var dt=$('#dlText');if(el.id==='dlBtn'&&dt)dt.textContent=label;else{var tn=Array.prototype.filter.call(el.childNodes,function(n){return n.nodeType===3&&n.nodeValue.trim()}).pop();if(tn)tn.nodeValue=label}}
+  if(label&&lg){var dt=$('#dlText');
+    if(el.id==='dlBtn'&&dt){o.node=dt;o.txt=dt.textContent;dt.textContent=label}
+    else{var tn=Array.prototype.filter.call(el.childNodes,function(n){return n.nodeType===3&&n.nodeValue.trim()}).pop();if(tn){o.node=tn;o.txt=tn.nodeValue;tn.nodeValue=label}}}
+  OFF.push(o);
+}
+function unblock(){
+  OFF.slice().reverse().forEach(function(o){var e=o.el;
+    if(o.href!==null)e.setAttribute('href',o.href);if(o.dl!==null)e.setAttribute('download',o.dl);if(o.tg!==null)e.setAttribute('target',o.tg);
+    e.classList.remove('is-off');e.removeAttribute('aria-disabled');e.removeAttribute('tabindex');
+    if(o.node){if(o.node.nodeType===3)o.node.nodeValue=o.txt;else o.node.textContent=o.txt}});
+  OFF=[];GEO.blocked=false;$('#geo').hidden=true;document.body.classList.remove('has-geo');
 }
 function applyGeo(cc){
-  GEO.ready=true;document.body.classList.remove('geo-pending');var r=RULES[cc];
+  GEO.ready=true;document.body.classList.remove('geo-pending');unblock();var r=RULES[cc];
   if(!r){loadRelease();return}
   var g=$('#geo');g.lang=r.lang;g.dir=r.dir;$('#geoT').textContent=r.t;$('#geoT').hidden=!r.t;$('#geoM').textContent=r.m;g.hidden=false;document.body.classList.add('has-geo');
   if(!r.block){var x=$('#geoX');x.hidden=false;x.onclick=function(){g.hidden=true;document.body.classList.remove('has-geo')};loadRelease();return}
   GEO.blocked=true;
   $$('a[href="#/download"],a[href*="github.com"]').forEach(function(a){off(a,r.b)});
-  var rel=$('#dlBtn');if(rel)off(rel,r.b);
+  var rel=$('#dlBtn');if(rel&&!rel.classList.contains('is-off'))off(rel,r.b);
 }
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href="#/download"],a[href*="github.com"],#dlBtn');if(a&&(!GEO.ready||GEO.blocked)){e.preventDefault();e.stopPropagation()}},true);
-getCountry().then(applyGeo,function(){var c=tzCountry();if(c){applyGeo(c);return}GEO.ready=true;document.body.classList.remove('geo-pending');loadRelease()});
+/* the country is re-checked whenever the situation may have changed (VPN on/off, tab back, network back) */
+function recheck(){
+  var n=Date.now();if(checking||n-lastCheck<4000){if(!pend)pend=setTimeout(function(){pend=null;recheck()},4200);return}checking=true;lastCheck=n;
+  getCountry().then(applyGeo,function(){var c=tzCountry();if(c){applyGeo(c);return}unblock();GEO.ready=true;document.body.classList.remove('geo-pending');loadRelease()})
+    .then(function(){checking=false},function(){checking=false});
+}
+document.addEventListener('visibilitychange',function(){if(!document.hidden)recheck()});
+window.addEventListener('online',function(){setTimeout(recheck,800)});
+window.addEventListener('focus',recheck);
+window.addEventListener('pageshow',function(e){if(e.persisted)recheck()});
+$('#geo').addEventListener('click',recheck);
+setInterval(function(){if(!document.hidden&&GEO.blocked)recheck()},60000);
+recheck();
+
 route();observe();
 })();
 </script>
