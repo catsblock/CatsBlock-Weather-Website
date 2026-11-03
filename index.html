@@ -3,9 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>CatsBlock Weather — Weather that feels alive</title>
-<meta name="description" content="CatsBlock Weather is a free, ad-free Android weather app with radar, live moon, travel forecasts, smart alerts and deep customization.">
-<meta name="theme-color" content="#f7f5f0">
+<title>CatsBlock Weather — Free Android weather app, no ads or accounts</title>
+<meta name="description" content="CatsBlock Weather is a free Android weather app with rain radar, route forecasts, an AI weather assistant and smart alerts. No ads, no accounts, no analytics.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="CatsBlock Weather">
+<meta property="og:description" content="A free Android weather app with rain radar, route forecasts, an AI weather assistant and smart alerts. No ads, no accounts, no analytics.">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1110" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M7 14 11 4l8 6h2l8-6 4 10v12a8 8 0 0 1-8 8H15a8 8 0 0 1-8-8V14Z' fill='%23ec4b22'/%3E%3Ccircle cx='15' cy='21' r='2' fill='%2314120f'/%3E%3Ccircle cx='25' cy='21' r='2' fill='%2314120f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -359,9 +365,36 @@ main{overflow-x:clip}
 body.has-geo{padding-bottom:140px}
 .is-off{opacity:.4;pointer-events:none;cursor:not-allowed;filter:grayscale(1)}
 body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],body.geo-pending #dlBtn{pointer-events:none;opacity:.55;cursor:progress}
+
+/* ===== pass 5: legal pages, agent card, accessibility ===== */
+.skip{position:fixed;left:12px;top:-60px;z-index:200;padding:10px 16px;border-radius:99px;background:var(--ink);color:var(--paper);text-decoration:none;font-weight:600;transition:top .2s}
+.skip:focus{top:calc(12px + env(safe-area-inset-top,0px))}
+:focus-visible{outline:2px solid var(--hot);outline-offset:3px;border-radius:4px}
+main:focus{outline:none}
+@media(min-width:640px){.b6{grid-column:span 6}}
+.bento .card.b6{min-height:0}
+.agent{display:grid;gap:22px}@media(min-width:900px){.agent{grid-template-columns:1.1fr .9fr;align-items:center;gap:44px}}
+.chat{display:grid;gap:8px;font-size:.92rem}
+.chat div{max-width:88%;padding:11px 15px;border-radius:18px;line-height:1.4}
+.chat .q{justify-self:end;background:var(--ink);color:var(--paper);border-bottom-right-radius:6px}
+.chat .a{justify-self:start;background:var(--card2);border:1px solid var(--line);border-bottom-left-radius:6px}
+.chat small{display:block;font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin-top:4px}
+.legal ul{padding-left:22px;display:grid;gap:6px;margin-bottom:14px;color:var(--mut)}
+.legal a{text-decoration:underline;text-decoration-color:var(--hot);text-underline-offset:3px}
+.legal .upd{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.legal-nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.legal-nav a{padding:8px 14px;border:1px solid var(--line2);border-radius:99px;font-size:.9rem;text-decoration:none}
+.legal-nav a[aria-current=page]{background:var(--ink);color:var(--paper)}
+.fgrid a[aria-current=page]{color:var(--hot)}
+.kv b{word-break:normal;overflow-wrap:anywhere;text-wrap:balance}
+.dl-side .v{font-size:clamp(2rem,6vw,2.6rem);overflow-wrap:anywhere}
+.dl-side [data-rel=name]{overflow-wrap:anywhere}
+noscript .ns{position:fixed;inset:auto 12px 12px;z-index:150;padding:14px 16px;border-radius:16px;background:var(--ink);color:var(--paper);font-size:.92rem}
 </style>
 </head>
 <body class="geo-pending">
+<a class="skip" href="#main-content" id="skip">Skip to content</a>
+<noscript><div class="ns">Some parts of this site (the download details, FAQ and settings lists) need JavaScript. You can still get the app from <a href="https://github.com/catsblock/CatsBlock-Weather-v2/releases" style="text-decoration:underline">GitHub Releases</a>.</div></noscript>
 <div class="progress" aria-hidden="true"></div>
 <div class="geo" id="geo" role="alert" hidden><svg class="hi" viewBox="0 0 24 24"><path d="M12 3 2 20h20Z"/><path d="M12 10v4M12 17h.01"/></svg><div><b id="geoT"></b><p id="geoM"></p></div><button id="geoX" type="button" aria-label="Close" hidden><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
 
@@ -372,18 +405,18 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
   <nav class="links" aria-label="Primary"><a href="#/about">About</a><a href="#/features">Features</a><a href="#/settings">Settings</a><a href="#/data">Data</a><a href="#/security">Security</a><a href="#/compare">Why us</a><a href="#/faq">FAQ</a><a href="#/privacy">Privacy</a></nav>
   <div class="cta"><a class="btn primary" href="#/download">Download</a><button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span></button></div>
 </div></header>
-<nav class="menu" id="menu" aria-label="Mobile"><a href="#/about">About</a><a href="#/features">Features</a><a href="#/settings">Settings</a><a href="#/data">Data</a><a href="#/security">Security</a><a href="#/compare">Why us</a><a href="#/faq">FAQ</a><a href="#/privacy">Privacy Policy</a></nav>
+<nav class="menu" id="menu" aria-label="Mobile"><a href="#/about">About</a><a href="#/features">Features</a><a href="#/settings">Settings</a><a href="#/data">Data</a><a href="#/security">Security</a><a href="#/compare">Why us</a><a href="#/faq">FAQ</a><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms of Service</a></nav>
 
-<main>
+<main id="main-content" tabindex="-1">
 <div class="page on" id="page-home">
 
 <section class="hero" id="top">
   <div class="orb" id="orb"></div>
   <div class="wrap">
     <div>
-      <div class="kick mono"><span>Station report</span><span id="today">Today</span><span>Free · No ads · No account</span></div>
-      <h1>Weather that <em>feels alive.</em></h1>
-      <p class="lead">CatsBlock Weather is a fast, beautiful Android weather app with live radar, a real moon camera, route forecasts and smart alerts that tell you what to wear — all customizable down to the font.</p>
+      <div class="kick mono"><span>CatsBlock Weather</span><span id="today">Today</span><span>Android</span></div>
+      <h1>Weather forecasts, <em>no ads or accounts.</em></h1>
+      <p class="lead">CatsBlock Weather is a free Android weather app with rain radar, a moon viewfinder, route forecasts, an AI weather assistant and alerts that tell you what to wear. Choose your weather provider, change the colors and fonts, and keep your cities on your phone.</p>
       <div class="actions">
         <a class="btn primary lg" href="#/download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 20h16"/></svg>Download for Android</a>
         <a class="btn lg" href="#/features">See the features</a>
@@ -415,7 +448,7 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
 <div class="marquee" aria-label="Public data sources"><div class="track" id="track"></div></div>
 
 <section id="about"><div class="wrap">
-  <div class="head reveal"><span class="eyebrow">About</span><h2>A weather app built with <em>care, not clutter.</em></h2>
+  <div class="head reveal"><span class="eyebrow">About</span><h2>A weather app that <em>keeps it simple.</em></h2>
     <p class="lead">CatsBlock Weather shows exactly what you need and nothing you don’t. It runs without accounts, ads or analytics, keeps your cities and preferences on your phone, and lets you decide which weather provider to trust.</p></div>
   <div class="rows">
     <div class="rrow reveal"><span class="num">01</span><h3><svg class="hi" viewBox="0 0 24 24"><path d="M12 2v4M4.9 4.9l2.8 2.8M2 12h4m11.3-4.3 2.8-2.8M18 12h4M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12Z"/></svg>Accurate &amp; detailed</h3><p>Current conditions, hourly and daily forecasts, UV, wind, pressure, visibility, humidity and air quality.</p><div class="fig"><span data-count="4">0</span><small>weather sources</small></div></div>
@@ -426,10 +459,10 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
 </div></section>
 
 <section id="features"><div class="wrap">
-  <div class="head center reveal"><span class="eyebrow">Features</span><h2>Everything you check, <em>in one place.</em></h2><p class="lead">From a quick glance to deep dives — each screen is built to be fast, readable and beautiful.</p></div>
+  <div class="head center reveal"><span class="eyebrow">Features</span><h2>What the app <em>can do.</em></h2><p class="lead">From a quick look at the temperature to detailed charts, every screen is built to be fast and easy to read.</p></div>
     <div class="bento">
       <div class="card b4 reveal" data-glow>
-        <span class="num">01 · ALERTS &amp; WARNINGS</span><h3>Alerts that know what to tell you</h3><p>Pick the hour, and the app checks the forecast and only speaks up when it matters: what to wear, UV, pollen, frost, pressure drops, air quality and official warnings.</p>
+        <span class="num">01 · ALERTS &amp; WARNINGS</span><h3>Alerts only when they matter</h3><p>Choose the hour. The app checks the forecast and only notifies you when something is worth knowing: what to wear, UV, pollen, frost, pressure drops, air quality and official warnings.</p>
         <div class="viz"><div class="mini-list">
           <div class="row"><span class="dot v"></span><b>What to wear today</b><em>07:30</em></div>
           <div class="row"><span class="dot y"></span><b>UV peaks at 9 around 13:00</b><em>08:00</em></div>
@@ -458,14 +491,21 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
         <div class="viz"><div class="pills"><span class="pill">Compact</span><span class="pill">Square</span><span class="pill">Tips</span><span class="pill">Hourly</span><span class="pill">Radar small</span><span class="pill">Radar wide</span></div></div>
       </div>
       <div class="card b3 reveal d1" data-glow>
-        <span class="num">07 · CUSTOMIZE</span><h3>Make it unmistakably yours</h3><p>AMOLED black, accent colors from your wallpaper or a hex code, your own font file, app icon changer and 10 languages.</p>
+        <span class="num">07 · CUSTOMIZE</span><h3>Change how it looks</h3><p>AMOLED black, accent colors from your wallpaper or a hex code, your own font file, app icon changer and 10 languages.</p>
         <div class="viz"><div class="pills"><span class="pill">English</span><span class="pill">Português</span><span class="pill">Español</span><span class="pill">Français</span><span class="pill">Русский</span><span class="pill">Deutsch</span><span class="pill">Italiano</span><span class="pill">한국어</span><span class="pill">Bahasa Indonesia</span></div></div>
+      </div>
+      <div class="card b6 reveal" data-glow>
+        <span class="num">08 · AGENT</span>
+        <div class="agent">
+          <div><h3>Ask the weather a question</h3><p>The Agent is an AI assistant for weather questions about your selected city. It uses up to 2,500 tokens per device every 24 hours. The app does not verify age, and the Agent is not recommended for children under 12. Replies are generated automatically and can be wrong, so check official warnings for anything important.</p></div>
+          <div class="chat" aria-label="Example conversation"><div class="q">Will it rain around 6 pm?</div><div class="a">Light rain is possible between 5 and 7 pm. A jacket should be enough.<small>Example</small></div></div>
+        </div>
       </div>
     </div>
 </div></section>
 
 <section id="how"><div class="wrap">
-  <div class="head center reveal"><span class="eyebrow">How to use</span><h2>Up and running <em>in one minute.</em></h2></div>
+  <div class="head center reveal"><span class="eyebrow">How to use</span><h2>Getting <em>started.</em></h2></div>
     <div class="steps">
       <div class="card reveal d1"><h3>Install</h3><p>Download the APK from the Download page, open it and allow your browser to install apps if Android asks.</p></div>
       <div class="card reveal d2"><h3>Allow location</h3><p>Tap Allow for your current weather, or skip it and search for any city instead.</p></div>
@@ -479,12 +519,12 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
 </div></section>
 
 <section id="settings"><div class="wrap">
-  <div class="head reveal"><span class="eyebrow">Settings</span><h2>Control <em>everything.</em></h2><p class="lead">Every option is in one clear Settings screen. Here is what you can change.</p></div>
+  <div class="head reveal"><span class="eyebrow">Settings</span><h2>What you can <em>change.</em></h2><p class="lead">Every option lives in one Settings screen. These are the groups you will find there.</p></div>
   <div class="tabs reveal" id="stabs"></div><div id="spanels"></div>
 </div></section>
 
 <section id="data"><div class="wrap">
-  <div class="head reveal"><span class="eyebrow">Data</span><h2>What data the app uses, <em>and why.</em></h2><p class="lead">Nothing is hidden. This is every kind of data the app touches and where it goes.</p></div>
+  <div class="head reveal"><span class="eyebrow">Data</span><h2>What data the app uses, <em>and why.</em></h2><p class="lead">Every kind of data the app uses, and where it goes.</p></div>
     <div class="scroll-x reveal"><table class="tbl">
       <thead><tr><th>Data</th><th>Why</th><th>Where it goes</th></tr></thead>
       <tbody>
@@ -496,8 +536,9 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
         <tr><td>Camera</td><td>Live Moon viewfinder only.</td><td>Preview on screen. Nothing is captured, stored or sent.</td></tr>
         <tr><td>Touch position</td><td>Animate rain, snow and touch effects.</td><td>Used on screen only. Never stored, logged or sent.</td></tr>
         <tr><td>Saved cities &amp; settings</td><td>Remember your choices.</td><td>Stored only on your device. Clear app data or uninstall to remove them.</td></tr>
-        <tr><td>IP address</td><td>Limit abuse when using WeatherAPI.com, Visual Crossing or OpenWeather.</td><td>Cloudflare Worker by CatsBlock Corporation keeps only an irreversible hash for at most 12 hours. Open-Meteo does not use this proxy.</td></tr>
-      <tr><td>Approximate country (this website only)</td><td>Apply regional availability rules to the download.</td><td>A public IP-to-country lookup (api.country.is, with ipapi.co as a fallback). The result is used once, in your browser, and is not stored.</td></tr></tbody>
+        <tr><td>Agent messages</td><td>Answer your weather questions.</td><td>Sent through the Cloudflare Worker to Google’s Gemini API and public weather services. CatsBlock Corporation does not store your messages or replies. Do not enter personal or confidential information.</td></tr>
+        <tr><td>IP address</td><td>Limit abuse when using WeatherAPI.com, Visual Crossing, OpenWeather or the Agent.</td><td>The Cloudflare Worker keeps counters tied to an irreversible hash of your IP address, never the original, for at most 24 hours. Open-Meteo does not use this proxy.</td></tr>
+      <tr><td>Approximate country (this website only)</td><td>Apply regional availability rules to the download.</td><td>Public IP-to-country services (api.country.is, geojs.io, ipwho.is, db-ip.com and ipapi.co). Each one sees your IP address. The result is kept in your browser’s memory only and is not stored.</td></tr></tbody>
     </table></div>
   <p class="lead reveal" style="margin-top:20px;font-size:.95rem">Read the full <a href="#/privacy" class="grad" style="font-weight:600">Privacy Policy</a>.</p>
 </div></section>
@@ -513,7 +554,7 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
 </div></section>
 
 <section id="compare"><div class="wrap">
-  <div class="head center reveal"><span class="eyebrow">Why CatsBlock</span><h2>Better where it <em>counts.</em></h2><p class="lead">A comparison with the common pattern in recent, modern weather apps — based on what CatsBlock Weather actually does.</p></div>
+  <div class="head center reveal"><span class="eyebrow">Why CatsBlock</span><h2>How it <em>compares.</em></h2><p class="lead">CatsBlock Weather next to common patterns in other weather apps.</p></div>
     <div class="scroll-x reveal"><table class="tbl">
       <thead><tr><th>&nbsp;</th><th class="hl">CatsBlock Weather</th><th>Typical modern weather app</th></tr></thead>
       <tbody>
@@ -534,13 +575,13 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
 </div></section>
 
 <section id="faq"><div class="wrap">
-  <div class="head center reveal"><span class="eyebrow">FAQ</span><h2>Common <em>questions.</em></h2></div>
+  <div class="head center reveal"><span class="eyebrow">FAQ</span><h2>Frequently asked <em>questions.</em></h2></div>
   <div class="faq reveal" id="faqList"></div>
 </div></section>
 
 <section class="final" id="get"><div class="wrap"><div class="box reveal">
   <span class="eyebrow"><i></i> Latest for Android</span>
-  <h2>Get CatsBlock Weather <span class="grad">today.</span></h2>
+  <h2>Download CatsBlock <span class="grad">Weather.</span></h2>
   <p class="lead">Recommended for Android 12 and newer. Works from Android 8.0.</p>
   <a class="btn primary lg" href="#/download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 20h16"/></svg>Download the latest version</a>
   <p class="small"><span data-rel="line">Latest build loads from GitHub</span></p>
@@ -552,7 +593,7 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
     <a class="back" href="#/"><svg class="hi" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></svg>Back</a>
     <span class="eyebrow"><i></i> Latest for Android</span>
     <h1>Download <span class="grad">CatsBlock Weather</span></h1>
-    <p class="lead" style="margin-top:18px">Recommended for Android 12 and newer. Read this page first — it explains the Play Protect warning, why the app is safe to install, and how to check it yourself.</p>
+    <p class="lead" style="margin-top:18px">Recommended for Android 12 and newer. Read this page first. It explains the Play Protect warning and how to check the file yourself before you install it.</p>
   </div></div>
   <div class="wrap" style="padding-bottom:clamp(56px,10vw,110px)">
     <div class="dl-grid">
@@ -611,20 +652,21 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
       </div>
 
       <aside class="dl-side">
-        <span class="badge">● Latest version</span>
+        <span class="badge">Latest release</span>
         <div class="v" data-rel="version">Loading…</div>
-        <p style="color:var(--muted);font-size:.92rem" data-rel="name">Reading the newest release from GitHub</p>
+        <p style="color:var(--muted);font-size:.92rem" data-rel="name">Reading the latest release from GitHub</p>
         <div class="kv">
           <div><span>Platform</span><b>Android 12+ recommended</b></div>
           <div><span>Minimum</span><b>Android 8.0</b></div>
           <div><span>Size</span><b data-rel="size">—</b></div>
           <div><span>Released</span><b data-rel="date">—</b></div>
           <div><span>Package</span><b>com.catsblock.weather</b></div>
+          <div><span>Version</span><b data-rel="vname">—</b></div>
         </div>
         <a class="btn primary lg" style="width:100%" id="dlBtn" href="https://github.com/catsblock/CatsBlock-Weather-v2/releases/latest" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 5-5m-5 5-5-5M4 20h16"/></svg><span id="dlText">Download APK</span></a>
         <a class="btn ghost" style="width:100%;margin-top:10px" href="https://github.com/catsblock/CatsBlock-Weather-v2/releases" target="_blank" rel="noopener">All releases on GitHub</a>
         <div class="hash" id="hashRow" style="display:none"><b style="color:var(--soft)">SHA-256</b><br><span data-rel="hash"></span></div>
-        <p style="color:var(--muted);font-size:.8rem;margin-top:16px">Downloads come straight from GitHub. This site never hosts or modifies the file.</p>
+        <p style="color:var(--muted);font-size:.8rem;margin-top:16px">Downloads come straight from GitHub. This site never hosts or modifies the file. By installing the app you agree to the <a href="#/terms" style="text-decoration:underline">Terms of Service</a> and the <a href="#/privacy" style="text-decoration:underline">Privacy Policy</a>.</p>
       </aside>
     </div>
   </div>
@@ -633,14 +675,18 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
   <div class="pagehead"><div class="wrap">
     <a class="back" href="#/"><svg class="hi" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></svg>Back</a>
     <h1>Privacy <span class="grad">Policy</span></h1>
-    <p class="lead" style="margin-top:18px">How CatsBlock Weather handles your data. Last updated 2026-10-27.</p>
+    <p class="lead" style="margin-top:18px">How CatsBlock Weather and this website handle your data.</p>
+    <nav class="legal-nav" aria-label="Legal pages"><a href="#/privacy" aria-current="page">Privacy Policy</a><a href="#/terms">Terms of Service</a></nav>
   </div></div>
   <div class="wrap legal" style="padding-bottom:clamp(56px,10vw,110px)">
+    <p class="upd">Last updated 2026-11-03</p>
     <h2>Company and app</h2>
-    <p>This Privacy Policy applies to the application CatsBlock Weather (the “App”), published by CatsBlock Corporation (“CatsBlock Corporation”, “we”, “us”).</p>
-    <p>By downloading, opening or using CatsBlock Weather, you acknowledge that you have read this Privacy Policy and agree to it. If you do not agree, do not use the App.</p>
+    <p>This Privacy Policy applies to the application CatsBlock Weather (the “App”) and to this website, published by CatsBlock Corporation (“CatsBlock Corporation”, “we”, “us”).</p>
+    <p>By downloading, opening or using CatsBlock Weather, you acknowledge that you have read this Privacy Policy and agree to it. If you do not agree, do not use the App. Use of the App is also governed by the <a href="#/terms">Terms of Service</a>.</p>
+    <h2>Controller and legal bases</h2>
+    <p>For the limited technical data described here, CatsBlock Corporation acts as data controller. Where the GDPR, UK GDPR, LGPD or similar laws apply, processing relies on legitimate interests in operating, securing and protecting the service from abuse and, for location, on your consent, which you can withdraw at any time in your device settings.</p>
     <h2>Data we process</h2>
-    <p>CatsBlock Corporation does not run user accounts, analytics or advertising, does not sell your data and does not build user profiles. The App stores saved cities and preferences on your device. When a Cloudflare Worker data source is used, limited technical data is processed to operate and protect the service: your IP address and approximate coordinates, as described below.</p>
+    <p>CatsBlock Corporation does not run user accounts, analytics or advertising, does not sell your data and does not build user profiles. The App stores saved cities and preferences on your device. When a Cloudflare Worker data source or the Agent is used, limited technical data is processed to operate and protect the service: your IP address and approximate coordinates, as described below.</p>
     <h2>Location permission</h2>
     <p>If you allow location access, your position is read on your device to find the weather where you are. When a data source that uses the Cloudflare Worker is selected, approximate coordinates (rounded to about 1 km) are sent through it. You can revoke location permission at any time in your device settings.</p>
     <h2>Data stored on your device</h2>
@@ -651,34 +697,94 @@ body.geo-pending a[href="#/download"],body.geo-pending a[href*="github.com"],bod
     <p>To show weather, coordinates and city searches are sent to free, public third-party services such as Open-Meteo, WeatherAPI.com, Visual Crossing and OpenWeather. Moon images and map tiles are loaded from public providers such as NASA and OpenStreetMap. These providers receive your IP address as part of the connection, are not operated by CatsBlock Corporation, and are governed by their own terms and privacy policies.</p>
     <p>When you use the travel planner, the places you type are sent to Open-Meteo to find their coordinates, the start and destination coordinates are sent to the public OSRM routing service to calculate the route, and coordinates of points along the route are sent to Open-Meteo to get the forecast. These services are not operated by CatsBlock Corporation. The planner does not store routes on any CatsBlock Corporation server.</p>
     <h2>Cloudflare Worker proxy</h2>
-    <p>When the WeatherAPI.com, Visual Crossing or OpenWeather data source is selected, requests go through a Cloudflare Worker operated by CatsBlock Corporation, which keeps API keys off your device and limits abuse. To enforce request limits it uses only your IP address; the Worker keeps only an irreversible hash of it, for at most 12 hours, and does not store the original value. No device identifier is collected or sent. Weather responses for rounded coordinates are cached for about 15 minutes. Cloudflare, as infrastructure provider, may process connection data under its own terms. The Open-Meteo data source does not use this proxy.</p>
+    <p>When the WeatherAPI.com, Visual Crossing or OpenWeather data source or the Agent is used, requests go through a Cloudflare Worker operated by CatsBlock Corporation, which keeps API keys off your device and limits abuse. To enforce limits, a Durable Object and Cloudflare KV keep counters tied to an irreversible hash of your IP address, never the original, for at most 24 hours. Your country, derived by Cloudflare from the connection, is checked per request and not stored. No device identifier is collected. Weather responses for rounded coordinates are cached for about 15 minutes. Cloudflare may process connection data under its own terms. The Open-Meteo source does not use this proxy.</p>
+    <h2>AI Agent</h2>
+    <p>The Agent sends your message, the selected city and rounded coordinates through the Worker to Google’s Gemini API and public weather services, which process them under their own terms. Do not enter personal, sensitive or confidential information. Replies are AI-generated, may be inaccurate and are not professional weather, safety or emergency advice; no decision with legal or similarly significant effects is made about you. CatsBlock Corporation does not store your messages or replies. The activity panel shows real technical steps, not the AI’s reasoning.</p>
+    <h2>This website</h2>
+    <p>This website does not use cookies, analytics or advertising. Opening it loads fonts from Google Fonts. The Download page asks GitHub’s public API for the latest release and keeps a copy of the answer in your browser’s session storage for ten minutes. To apply the regional rules described in the Terms of Service, the site asks public IP-to-country services (api.country.is, geojs.io, ipwho.is, db-ip.com and ipapi.co) for your approximate country. Each of these services, like GitHub and Google Fonts, receives your IP address as part of the connection and follows its own privacy policy. The country result is kept in your browser’s memory only and is not stored by us. The host of this website may keep ordinary server logs.</p>
+    <h2>International transfers</h2>
+    <p>Data is processed on Cloudflare’s global network and by the third-party providers named in this policy, which may be located outside your country, including outside the EEA and the UK. Where required, transfers rely on the safeguards those providers offer, such as Standard Contractual Clauses.</p>
+    <h2>Your rights</h2>
+    <p>Depending on where you live (including under the GDPR, UK GDPR, LGPD, CCPA/CPRA and PIPEDA), you may have rights to access, correct, delete, restrict or port personal data, to object to processing and to withdraw consent. CatsBlock Corporation does not sell or share personal information and does not use it for advertising or profiling. Because it offers no accounts or contact channel and keeps only irreversible hashes that cannot be linked to you, it cannot identify you or retrieve data about you, so such requests generally cannot be fulfilled; records expire automatically. You may complain to your local data protection authority.</p>
+    <h2>Children</h2>
+    <p>The App is not directed to children under 16, and CatsBlock Corporation does not knowingly collect their personal data. Where local law sets a different minimum age, that age applies. If you are below it, do not use the App.</p>
+    <h2>Regional restrictions</h2>
+    <p>The service is not available in certain regions because of local laws, sanctions and data-transfer rules, currently including Japan, Iran, Cuba, North Korea, Syria, China, Russia and the Crimea, Donetsk, Luhansk and Sevastopol regions. Cloudflare determines your country from the connection on each request without storing it, and access is re-evaluated automatically. Bypassing these restrictions with a VPN, proxy or other means is prohibited, and you are solely responsible for complying with the laws that apply to you.</p>
     <h2>Security</h2>
     <p>We apply reasonable technical measures such as encrypted connections, request validation and rate limiting, but no system is completely secure, and we cannot guarantee that the service will be free of errors, vulnerabilities or unauthorized access.</p>
+    <h2>No emergency use</h2>
+    <p>Do not rely on the App or the Agent for emergencies or for safety-critical or life-critical decisions. Always follow official warnings and instructions from your local authorities.</p>
     <h2>Limitation of liability</h2>
     <p>The App and its servers are provided “as is” and “as available”, without warranties of any kind. To the fullest extent permitted by applicable law, CatsBlock Corporation is not liable for server downtime or interruptions, data leaks, security breaches, vulnerabilities, errors, inaccurate weather data, or any loss or damage resulting from the use of, or inability to use, the App or its servers, and by using the App you agree not to bring claims against CatsBlock Corporation for these reasons. Weather data accuracy is the responsibility of the third-party providers. Nothing in this policy excludes liability that cannot be excluded by law or limits rights you have under mandatory data protection or consumer laws.</p>
+    <h2>Indemnification and governing law</h2>
+    <p>To the fullest extent permitted by law, you agree to indemnify and hold harmless CatsBlock Corporation from claims, losses and expenses arising from your misuse of the App, your breach of this policy or applicable law, or your use of the service from a restricted region. This policy is governed by the laws of the jurisdiction where CatsBlock Corporation is established, without prejudice to mandatory consumer and data protection rules of your country of residence. If a provision is unenforceable, the rest remains in force.</p>
     <h2>No individual support</h2>
     <p>CatsBlock Corporation does not provide individual support and offers no contact channel. Requests, questions or messages cannot be answered.</p>
     <h2>Changes to this policy</h2>
-    <p>We may update this policy at any time. Continuing to use the App after an update means you accept it. Last updated: 2026-10-27.</p>
+    <p>We may update this policy at any time. Continuing to use the App after an update means you accept it. Last updated: 2026-11-03.</p>
+  </div>
+</div>
+<div class="page" id="page-terms">
+  <div class="pagehead"><div class="wrap">
+    <a class="back" href="#/"><svg class="hi" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></svg>Back</a>
+    <h1>Terms of <span class="grad">Service</span></h1>
+    <p class="lead" style="margin-top:18px">The rules for using CatsBlock Weather, the Agent and this website.</p>
+    <nav class="legal-nav" aria-label="Legal pages"><a href="#/privacy">Privacy Policy</a><a href="#/terms" aria-current="page">Terms of Service</a></nav>
+  </div></div>
+  <div class="wrap legal" style="padding-bottom:clamp(56px,10vw,110px)">
+    <p class="upd">Last updated 2026-11-03</p>
+    <h2>Acceptance of the terms</h2>
+    <p>By using CatsBlock Weather (the “App”) or this website, published by CatsBlock Corporation, you agree to these Terms of Service and to the <a href="#/privacy">Privacy Policy</a>. If you do not agree, do not use the App. You can review these terms at any time on this page and in the App under Settings.</p>
+    <h2>Who can use the App</h2>
+    <p>The App does not verify age. Where local law sets a minimum age for using the App, that age applies. The Agent is an AI and is not recommended for children under 12. If you let a child use the App, you are responsible for their use.</p>
+    <h2>Getting and updating the App</h2>
+    <p>The App is distributed as an APK file through the GitHub Releases of the official repository, linked from this website. It is not distributed through Google Play, so Android and Play Protect may show warnings when you install it. Install only files obtained from this website or the official repository, and check them as described on the <a href="#/download">Download page</a>. The built-in updater downloads new builds from the same releases and Android asks for your confirmation before installing. You are responsible for the security of your own device.</p>
+    <p>The source code is viewable on GitHub. Unless the repository states otherwise, viewing the code does not grant a license to copy, modify or redistribute it.</p>
+    <h2>The Agent</h2>
+    <p>The Agent is an AI that answers questions about the weather. Its replies are generated automatically, may be inaccurate or incomplete, and are not professional weather, safety or emergency advice. Always check the official forecast and warnings from your local authorities.</p>
+    <h2>Agent usage limits</h2>
+    <p>Agent usage is limited by the number of tokens it spends, up to 2,500 tokens per device within 24 hours. When the limit is reached, the message box is replaced by a notice with the time it will return. Messages sent in quick succession are queued, and sending too many messages in a short time blocks further messages for one minute.</p>
+    <h2>Acceptable use</h2>
+    <p>Do not use the Agent for anything inappropriate, unlawful or against these terms, including crimes, harassment, attempts to bypass its rules or safety measures, and requests unrelated to the weather. Messages that violate these terms are not answered and are marked as a violation.</p>
+    <p>Do not attempt to bypass limits, impersonate other devices, overload the servers or access the service by automated means.</p>
+    <h2>Servers and third-party services</h2>
+    <p>The App relies on servers and services operated by CatsBlock Corporation and third parties, including a Cloudflare Worker, Google’s Gemini and public weather and map providers, which follow their own terms. To enforce fair limits for each device, a one-way hash of your device’s characteristics is used as described in the Privacy Policy. We may block or limit access to prevent abuse or to comply with the law.</p>
+    <h2>Availability and regions</h2>
+    <p>The service is provided when available and may change, be interrupted or be unavailable in some regions because of local laws, sanctions and data-transfer rules. Downloads from this website may be disabled based on your approximate country, and bypassing a restriction with a VPN, proxy or other means is prohibited. We may add, change or remove features, limits and data sources at any time.</p>
+    <h2>Weather information and emergencies</h2>
+    <p>Forecasts, alerts and other weather data come from third-party providers and may be late, incomplete or wrong. Do not rely on the App or the Agent for emergencies or for safety-critical or life-critical decisions. Follow official warnings and instructions from your local authorities.</p>
+    <h2>Disclaimer</h2>
+    <p>The App, the website and the Agent are provided “as is” and “as available”, without warranties of any kind.</p>
+    <p>To the fullest extent permitted by law, CatsBlock Corporation is not liable for any indirect, incidental or consequential damages, or for decisions made based on the App or the Agent. Nothing in these terms excludes liability that cannot be excluded by law or limits rights you have under mandatory consumer or data protection laws.</p>
+    <h2>Indemnification and governing law</h2>
+    <p>To the fullest extent permitted by law, you agree to indemnify and hold harmless CatsBlock Corporation from claims, losses and expenses arising from your misuse of the App, your breach of these terms or applicable law, or your use of the service from a restricted region. These terms are governed by the laws of the jurisdiction where CatsBlock Corporation is established, without prejudice to mandatory consumer and data protection rules of your country of residence. If a provision is unenforceable, the rest remains in force.</p>
+    <h2>Suspension and termination</h2>
+    <p>We may suspend or block access to the App or the Agent, including for violations of these terms. You can stop using the App at any time by uninstalling it.</p>
+    <h2>No individual support</h2>
+    <p>CatsBlock Corporation does not provide individual support and offers no contact channel.</p>
+    <h2>Changes to these terms</h2>
+    <p>We may update these terms at any time. Continuing to use the App after an update means you accept it. Last updated: 2026-11-03.</p>
   </div>
 </div>
 </main>
 
 <footer><div class="wrap">
   <div class="fgrid">
-    <div><a class="logo" href="#/">CatsBlock Weather</a><p>A free, private and beautiful weather app for Android. No ads, no accounts, no analytics.</p></div>
+    <div><a class="logo" href="#/">CatsBlock Weather</a><p>A free weather app for Android. No ads, no accounts, no analytics.</p></div>
     <div><h4>Product</h4><a href="#/features">Features</a><a href="#/settings">Settings</a><a href="#/compare">Why CatsBlock</a><a href="#/download">Download</a></div>
     <div><h4>Learn</h4><a href="#/data">Data we use</a><a href="#/security">Play Protect</a><a href="#/faq">FAQ</a></div>
-    <div><h4>Legal &amp; code</h4><a href="#/privacy">Privacy Policy</a><a href="https://github.com/catsblock/CatsBlock-Weather-v2" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/catsblock/CatsBlock-Weather-v2/releases" target="_blank" rel="noopener">Releases</a></div>
+    <div><h4>Legal &amp; code</h4><a href="#/privacy">Privacy Policy</a><a href="#/terms">Terms of Service</a><a href="https://github.com/catsblock/CatsBlock-Weather-v2" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/catsblock/CatsBlock-Weather-v2/releases" target="_blank" rel="noopener">Releases</a></div>
   </div>
-  <div class="fbot"><span>© 2026 CatsBlock Corporation. All rights reserved.</span><span class="ok"><i></i>Free · No ads · No account</span></div>
+  <div class="fbot"><span>© <span id="yr">2026</span> CatsBlock Corporation. All rights reserved.</span><span class="ok"><i></i>Free · No ads · No account</span></div>
 </div></footer>
 
 <script>
 (function(){
 'use strict';
 var CFG={owner:'catsblock',repo:'CatsBlock-Weather-v2'};
-var PAGES=['download','privacy'];
+var PAGES=['download','privacy','terms'];
+var TITLES={download:'Download',privacy:'Privacy Policy',terms:'Terms of Service'};
+var BASE_TITLE=document.title;
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -689,7 +795,9 @@ function route(){
   $$('.page').forEach(function(p){p.classList.remove('on')});
   $('#page-'+(isPage?h:'home')).classList.add('on');
   closeMenu();
-  if(isPage){window.scrollTo(0,0);if(h==='download')loadRelease();observe();return}
+  document.title=isPage?TITLES[h]+' — CatsBlock Weather':BASE_TITLE;
+  $$('a[href^="#/"]').forEach(function(a){if(a.getAttribute('href')==='#/'+h&&isPage)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  if(isPage){window.scrollTo(0,0);try{$('#main-content').focus({preventScroll:true})}catch(e){}if(h==='download')loadRelease();observe();return}
   var target=h&&document.getElementById(h);
   if(target){setTimeout(function(){target.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})},60)}else window.scrollTo(0,0);
   observe();
@@ -716,6 +824,7 @@ function count(el){
 }
 document.addEventListener('pointermove',function(e){var c=e.target.closest&&e.target.closest('.card');if(!c)return;var r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px')},{passive:true});
 
+try{$('#yr').textContent=new Date().getFullYear()}catch(e){}
 try{$('#today').textContent=new Date().toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'})}catch(e){}
 
 /* label table cells for the stacked mobile layout */
@@ -784,13 +893,15 @@ var FAQ=[
  ['Why does Play Protect warn me when I install?','<p>Because the app is installed from outside Google Play and every new build is a file Google has not seen yet. It is an “unfamiliar app” prompt, not a malware verdict. Choose <b>More details → Install anyway</b> or <b>Scan app</b>.</p><p>See <a class="grad" href="#/download">the download page</a> for details and ways to verify the file yourself.</p>'],
  ['Why doesn’t Play Protect warn me after I install it?','<p>The unfamiliar-app check happens at install time. After the file is analyzed and nothing harmful is found, there is nothing to flag while you use the app. A new update is a new file, so you may see the prompt once again.</p>'],
  ['Is the app safe?','<p>You can check it yourself: the source code is public on GitHub, APKs are built by a public GitHub Actions workflow, the permissions are listed and explained, and the privacy policy states there are no ads, analytics or accounts. Scan the file on VirusTotal if you want a second opinion, and download only from this site or the official repository.</p>'],
+ ['What is the Agent?','<p>An AI assistant for weather questions about your selected city. The app does not verify age, and the Agent is not recommended for children under 12. Replies are generated automatically and may be wrong, and usage is limited to 2,500 tokens per device every 24 hours. Messages go through the Cloudflare Worker to Google’s Gemini API, and CatsBlock Corporation does not store them. See the <a class="grad" href="#/terms">Terms of Service</a>.</p>'],
  ['Which Android versions are supported?','<p>Android 12 or newer is recommended for the best experience. The app installs from Android 8.0.</p>'],
- ['What data does the app collect?','<p>No accounts, analytics or advertising. Saved cities and preferences stay on your device. Weather providers receive coordinates or city searches to return a forecast, and the optional Cloudflare Worker keeps only a short-lived hash of your IP for rate limiting. See the <a class="grad" href="#/data">data table</a> and the <a class="grad" href="#/privacy">Privacy Policy</a>.</p>'],
+ ['What data does the app collect?','<p>No accounts, analytics or advertising. Saved cities and preferences stay on your device. Weather providers receive coordinates or city searches to return a forecast, and the Cloudflare Worker keeps only an irreversible hash of your IP for rate limiting, for at most 24 hours. See the <a class="grad" href="#/data">data table</a> and the <a class="grad" href="#/privacy">Privacy Policy</a>.</p>'],
  ['Why does the app ask for the camera?','<p>Only for the Live Moon screen’s viewfinder. The camera shows a live preview; nothing is captured, stored or sent. You can deny it and the rest of the app keeps working.</p>'],
  ['Why does it need permission to install packages?','<p>For the built-in updater. It fetches the newest APK from the GitHub release and asks Android to install it. Android still requires your confirmation, and you can turn update checks off.</p>'],
  ['Which weather source should I pick?','<p>Open-Meteo is the default and works without a key or proxy. WeatherAPI.com, Visual Crossing and OpenWeather are available through the Cloudflare Worker, or with your own key.</p>'],
  ['Why am I not getting alerts?','<ul><li>Allow notifications for the app in Android settings.</li><li>Set the app’s battery usage to “Unrestricted”, since some phones pause background work.</li><li>Check that background updates are on and that mobile data updates are allowed if you are not on Wi-Fi.</li><li>Alerts run at the hour you chose and may be delayed a few minutes by Android power saving.</li></ul>'],
  ['How do I update the app?','<p>Use Settings → Check for updates, or download the newest build from this site. Your settings and saved cities are kept when you update over the existing install.</p>'],
+ ['Why is the download unavailable in my country?','<p>The service is not offered in some regions because of local laws, sanctions and data-transfer rules. The site checks your approximate country when you open it, and bypassing the restriction with a VPN is not allowed. See the Availability and regions section of the <a class="grad" href="#/terms">Terms of Service</a>.</p>'],
  ['Can I get support?','<p>CatsBlock Corporation does not provide individual support and has no contact channel, as stated in the Privacy Policy. This page and the public repository are the best sources of information.</p>']
 ];
 $('#faqList').innerHTML=FAQ.map(function(f,i){return '<details'+(i===0?' open':'')+'><summary>'+f[0]+'</summary><div class="ans">'+f[1]+'</div></details>'}).join('');
@@ -800,10 +911,13 @@ function mb(n){return (n/1048576).toFixed(1)+' MB'}
 function applyRelease(r){
   var apk=(r.assets||[]).filter(function(a){return /\.apk$/i.test(a.name)})[0];
   var m=/build-(\d+)/i.exec(r.tag_name||'');
-  setRel('version',m?'Version 1.0.'+m[1]:(r.tag_name||'Latest'));
-  setRel('name',(r.name||r.tag_name||'')+(apk?' · '+apk.name:''));
+  var relName=String(r.name||'').trim();
+  var shown=m?'Build '+m[1]:(relName||r.tag_name||'Latest');
+  setRel('version',shown);
+  setRel('vname',relName&&relName!==shown&&!/^build\s+\d+$/i.test(relName)?relName:(m?'Build '+m[1]:shown));
+  setRel('name',apk?apk.name:(relName||r.tag_name||''));
   setRel('date',r.published_at?new Date(r.published_at).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}):'—');
-  setRel('line',(r.name||r.tag_name||'Latest build')+(apk?' · '+mb(apk.size):'')+' · from GitHub');
+  setRel('line',shown+(apk?' · '+mb(apk.size):'')+' · from GitHub');
   if(apk){
     setRel('size',mb(apk.size));
     var b=$('#dlBtn');b.href=apk.browser_download_url;b.removeAttribute('target');b.setAttribute('download',apk.name);
@@ -819,10 +933,11 @@ function loadRelease(){
   try{cached=JSON.parse(sessionStorage.getItem(key)||'null')}catch(e){}
   if(cached&&Date.now()-cached.t<600000){releaseLoaded=true;applyRelease(cached.r);return}
   fetch('https://api.github.com/repos/'+CFG.owner+'/'+CFG.repo+'/releases/latest',{headers:{'Accept':'application/vnd.github+json'}})
-    .then(function(r){if(!r.ok)throw new Error(r.status);return r.json()})
+    .then(function(r){if(r.status===404){var e=new Error('none');e.none=true;throw e}if(!r.ok)throw new Error(r.status);return r.json()})
     .then(function(r){releaseLoaded=true;try{sessionStorage.setItem(key,JSON.stringify({t:Date.now(),r:r}))}catch(e){}applyRelease(r)})
-    .catch(function(){
-      setRel('version','Latest build');setRel('name','Could not read the release info. The button opens the latest release on GitHub.');setRel('line','Latest build on GitHub');
+    .catch(function(err){
+      if(err&&err.none){setRel('version','No release yet');setRel('vname','—');setRel('name','No public release has been published yet. Check back soon.');setRel('line','No public release yet');return}
+      setRel('version','Latest build');setRel('vname','—');setRel('name','Could not read the release info. The button opens the latest release on GitHub.');setRel('line','Latest build on GitHub');
     });
 }
 
@@ -833,9 +948,12 @@ var RULES={
  IR:{block:1,lang:'fa',dir:'rtl',t:'\u062f\u0627\u0646\u0644\u0648\u062f \u062f\u0631 \u062f\u0633\u062a\u0631\u0633 \u0646\u06cc\u0633\u062a',b:'\u062f\u0627\u0646\u0644\u0648\u062f \u062f\u0631 \u062f\u0633\u062a\u0631\u0633 \u0646\u06cc\u0633\u062a',m:'API\u0647\u0627\u06cc \u0622\u0645\u0631\u06cc\u06a9\u0627\u06cc \u0644\u0627\u062a\u06cc\u0646 \u062f\u0631 \u06a9\u0634\u0648\u0631 \u0634\u0645\u0627 \u0645\u0633\u062f\u0648\u062f \u0634\u062f\u0647\u200c\u0627\u0646\u062f.'},
  SY:{block:1,lang:'ar',dir:'rtl',t:'\u0627\u0644\u062a\u0646\u0632\u064a\u0644 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d',b:'\u0627\u0644\u062a\u0646\u0632\u064a\u0644 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d',m:'\u0648\u0627\u062c\u0647\u0627\u062a \u0628\u0631\u0645\u062c\u0629 \u0627\u0644\u062a\u0637\u0628\u064a\u0642\u0627\u062a (API) \u0627\u0644\u062e\u0627\u0635\u0629 \u0628\u0623\u0645\u0631\u064a\u0643\u0627 \u0627\u0644\u0644\u0627\u062a\u064a\u0646\u064a\u0629 \u0645\u062d\u0638\u0648\u0631\u0629 \u0641\u064a \u0628\u0644\u062f\u0643.'},
  CU:{block:1,lang:'es',dir:'ltr',t:'Descarga no disponible',b:'Descarga no disponible',m:'Las API de Am\u00e9rica Latina est\u00e1n bloqueadas en tu pa\u00eds.'},
+ KP:{block:1,lang:'ko',dir:'ltr',t:'\ub2e4\uc6b4\ub85c\ub4dc\ub97c \uc0ac\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4',b:'\ub2e4\uc6b4\ub85c\ub4dc \ubd88\uac00',m:'\uc9c0\uc5ed\uc758 \ubc95\ub960\uacfc \uc81c\uc7ac\ub85c \uc778\ud574 \uc774 \uc11c\ube44\uc2a4\ub97c \uc774\uc6a9\ud560 \uc218 \uc5c6\uc2b5\ub2c8\ub2e4.'},
+ CN:{block:1,lang:'zh',dir:'ltr',t:'\u65e0\u6cd5\u4e0b\u8f7d',b:'\u65e0\u6cd5\u4e0b\u8f7d',m:'\u7531\u4e8e\u6240\u5728\u5730\u533a\u7684\u6cd5\u5f8b\u548c\u5236\u88c1\u89c4\u5b9a\uff0c\u672c\u670d\u52a1\u4e0d\u53ef\u7528\u3002'},
+ RU:{block:1,lang:'ru',dir:'ltr',t:'\u0421\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u0435 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e',b:'\u0421\u043a\u0430\u0447\u0438\u0432\u0430\u043d\u0438\u0435 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u043d\u043e',m:'\u0421\u0435\u0440\u0432\u0438\u0441 \u043d\u0435\u0434\u043e\u0441\u0442\u0443\u043f\u0435\u043d \u0438\u0437-\u0437\u0430 \u0437\u0430\u043a\u043e\u043d\u043e\u0432 \u0438 \u0441\u0430\u043d\u043a\u0446\u0438\u0439 \u0432 \u0432\u0430\u0448\u0435\u043c \u0440\u0435\u0433\u0438\u043e\u043d\u0435.'},
  IN:{block:1,lang:'en',dir:'ltr',t:'Download unavailable',b:'Download unavailable',m:'Service unavailable due to laws in your region.'}
 };
-var TZ={'Asia/Tokyo':'JP','Asia/Tehran':'IR','Asia/Damascus':'SY','America/Havana':'CU','Asia/Kolkata':'IN','Asia/Calcutta':'IN'};
+var TZ={'Asia/Tokyo':'JP','Asia/Tehran':'IR','Asia/Damascus':'SY','America/Havana':'CU','Asia/Kolkata':'IN','Asia/Calcutta':'IN','Asia/Pyongyang':'KP','Asia/Shanghai':'CN','Asia/Urumqi':'CN','Europe/Moscow':'RU','Europe/Kaliningrad':'RU','Europe/Samara':'RU','Europe/Volgograd':'RU','Asia/Yekaterinburg':'RU','Asia/Omsk':'RU','Asia/Novosibirsk':'RU','Asia/Krasnoyarsk':'RU','Asia/Irkutsk':'RU','Asia/Yakutsk':'RU','Asia/Vladivostok':'RU','Asia/Magadan':'RU','Asia/Kamchatka':'RU'};
 function tzCountry(){try{return TZ[Intl.DateTimeFormat().resolvedOptions().timeZone]||null}catch(e){return null}}
 function getCountry(){
   var P=[['https://api.country.is/'],['https://get.geojs.io/v1/ip/country.json'],['https://ipwho.is/'],['https://api.db-ip.com/v2/free/self'],['https://ipapi.co/country/','t']];
